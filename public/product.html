@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали Хлеба</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <h1>Детали продукта</h1>
+    <div id="info"></div>
+    <button onclick="addToCart()">Добавить в корзину</button>
+    <button onclick="Telegram.WebApp.close()">Закрыть</button>
+    <button onclick="goToMain()">На главную</button>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        const products = {
+            sourdough: { name: 'Хлеб на закваске', desc: 'Состав: мука, вода, соль. Калории: 250 ккал/100г. Время: 2-3 дня.' },
+            baguette: { name: 'Багет', desc: 'Состав: мука, вода. Калории: 300 ккал/100г. Время: 2 дня.' },
+            chocolate: { name: 'Шоколадный', desc: 'Состав: мука, какао. Калории: 350 ккал/100г. Время: 3 дня.' }
+        };
+        document.getElementById('info').innerHTML = `<p>${products[id].name}</p><p>${products[id].desc}</p>`;
+        function goToMain() { window.location.href = 'index.html'; }
+        function addToCart() {
+            Telegram.WebApp.sendData(JSON.stringify({ action: 'add', item: id }));
+            Telegram.WebApp.showAlert('Добавлено в корзину!');
+        }
+    </script>
+</body>
+</html>

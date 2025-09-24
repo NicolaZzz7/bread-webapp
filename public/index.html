@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Каталог хлеба</title>
+  <style>
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>Каталог хлеба</h1>
+  <table id="catalogTable">
+    <tr><th>Название</th><th>100г</th><th>500г</th><th>750г</th></tr>
+  </table>
+  <script>
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('catalog')) {
+    fetch('/api/catalog')
+      .then(response => response.json())
+      .then(data => {
+        const table = document.getElementById('catalogTable');
+        for (let breadId in data) {
+          const item = data[breadId];
+          const row = table.insertRow();
+          row.insertCell(0).innerText = item.name;
+          row.insertCell(1).innerText = item.price_100 > 0 ? `${item.price_100}₽` : '-';
+          row.insertCell(2).innerText = item.price_500 > 0 ? `${item.price_500}₽` : '-';
+          row.insertCell(3).innerText = item.price_750 > 0 ? `${item.price_750}₽` : '-';
+        }
+      })
+      .catch(error => {
+        console.error('Ошибка загрузки данных:', error);
+        document.getElementById('catalogTable').innerHTML += '<tr><td colspan="4">Ошибка загрузки каталога.</td></tr>';
+      });
+  }
+</script>
+</body>
+</html>
