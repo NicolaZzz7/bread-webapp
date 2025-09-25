@@ -1,38 +1,36 @@
-// Глобальные переменные
+/ Глобальные переменные
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let selectedWeights = {};
 
-// Инициализация приложения
-function initApp() {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();
-    loadCatalog();
-    setupEventListeners();
-}
-
-// Настройка обработчиков событий
-function setupEventListeners() {
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', handleSearch);
-    }
-}
+// Инициализация Telegram Web App
+Telegram.WebApp.ready();
+Telegram.WebApp.expand();
 
 // Загрузка каталога
 async function loadCatalog() {
-    try {
-        const response = await fetch('/api/catalog');
-        if (!response.ok) throw new Error('Ошибка загрузки данных');
-
-        products = await response.json();
-        renderProducts(products);
-        updateCartIndicator();
-
-    } catch (error) {
-        showErrorState(error.message);
-        console.error('Error loading catalog:', error);
+  console.log('Начало загрузки каталога'); // Лог 1
+  try {
+    const response = await fetch('/api/catalog');
+    console.log('Response status:', response.status); // Лог 2
+    if (!response.ok) {
+      throw new Error('Ошибка загрузки данных: ' + response.status);
     }
+    const data = await response.json();
+    console.log('Данные получены:', data); // Лог 3
+    products = data;
+    renderProducts(products);
+    updateCartIndicator();
+  } catch (error) {
+    console.error('Ошибка загрузки данных:', error); // Лог 4
+    document.getElementById('productGrid').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">😕</div>
+        <div>Не удалось загрузить каталог</div>
+        <div style="margin-top: 8px; font-size: 14px;">${error.message}</div>
+      </div>
+    `;
+  }
 }
 
 // Отображение продуктов
@@ -274,3 +272,5 @@ function getLoadingHTML() {
         </div>
     `;
 }
+
+loadCatalog();
