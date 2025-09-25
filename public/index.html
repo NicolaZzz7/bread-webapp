@@ -37,7 +37,7 @@
       width: 100%;
       border-collapse: collapse;
       margin: 20px 0;
-      max-width: 100%; /* Убедимся, что таблица не превышает экран */
+      max-width: 100%;
     }
 
     th, td {
@@ -57,11 +57,44 @@
     th:nth-child(3), td:nth-child(3) { width: 15%; } /* 500г */
     th:nth-child(4), td:nth-child(4) { width: 15%; } /* 750г */
 
-    /* Адаптация для мобильных устройств без прокрутки */
+    /* Стили для кликабельных ячеек */
+    td:nth-child(1) { cursor: pointer; }
+    td:nth-child(2), td:nth-child(3), td:nth-child(4) { cursor: pointer; }
+    td:hover { background-color: var(--table-bg); }
+
+    /* Модальное окно */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 15% auto;
+      padding: 20px;
+      width: 70%;
+      max-width: 500px;
+      border-radius: 5px;
+      text-align: left;
+    }
+
+    .close {
+      float: right;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* Адаптация для мобильных устройств */
     @media (max-width: 600px) {
       table {
         width: 100%;
-        table-layout: auto; /* Автоматическая подгонка */
+        table-layout: auto;
       }
 
       th, td {
@@ -72,6 +105,11 @@
       h1 {
         font-size: 1.2em;
       }
+
+      .modal-content {
+        margin: 20% auto;
+        width: 90%;
+      }
     }
   </style>
 </head>
@@ -80,6 +118,18 @@
   <table id="catalogTable">
     <tr><th>Название</th><th>100г</th><th>500г</th><th>750г</th></tr>
   </table>
+
+  <!-- Модальное окно для "Подробнее" -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p><strong>Ингредиенты:</strong> <span id="modalIngredients"></span></p>
+      <p><strong>Добавки:</strong> <span id="modalAddons"></span></p>
+      <p><strong>Время приготовления:</strong> <span id="modalPrepTime"></span></p>
+    </div>
+  </div>
+
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('catalog')) {
@@ -90,16 +140,58 @@
           for (let breadId in data) {
             const item = data[breadId];
             const row = table.insertRow();
-            row.insertCell(0).innerText = item.name;
+            // Название - кликабельно для "Подробнее"
+            const nameCell = row.insertCell(0);
+            nameCell.innerText = item.name;
+            nameCell.onclick = () => showDetails(breadId, item);
+
+            // Цены - кликабельны для добавления в корзину
             row.insertCell(1).innerText = item.price_100 > 0 ? `${item.price_100}₽` : '-';
             row.insertCell(2).innerText = item.price_500 > 0 ? `${item.price_500}₽` : '-';
             row.insertCell(3).innerText = item.price_750 > 0 ? `${item.price_750}₽` : '-';
+            row.cells[1].onclick = () => addToCart(breadId, 100, item.price_100);
+            row.cells[2].onclick = () => addToCart(breadId, 500, item.price_500);
+            row.cells[3].onclick = () => addToCart(breadId, 750, item.price_750);
           }
         })
         .catch(error => {
           console.error('Ошибка загрузки данных:', error);
           document.getElementById('catalogTable').innerHTML += '<tr><td colspan="4">Ошибка загрузки каталога.</td></tr>';
         });
+    }
+
+    // Показать модальное окно с деталями
+    function showDetails(breadId, item) {
+      document.getElementById('modalTitle').innerText = item.name;
+      document.getElementById('modalIngredients').innerText = item.ingredients || 'Не указано';
+      document.getElementById('modalAddons').innerText = item.addons || 'Нет';
+      document.getElementById('modalPrepTime').innerText = item.prep_time || 'Не указано';
+      document.getElementById('modal').style.display = 'block';
+    }
+
+    // Закрыть модальное окно
+    document.querySelector('.close').onclick = function() {
+      document.getElementById('modal').style.display = 'none';
+    };
+
+    // Закрыть модальное окно при клике вне области
+    window.onclick = function(event) {
+      const modal = document.getElementById('modal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    };
+
+    // Добавить в корзину
+    function addToCart(breadId, weight, price) {
+      if (price > 0) {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.push({ id: breadId, weight: weight, price: price });
+        localStorage.setItem('cart', JSON.stringify(cart));
+        alert(`Добавлено в корзину: ${breadId} (${weight}г) - ${price}₽`);
+      } else {
+        alert('Этот вес недоступен для покупки.');
+      }
     }
   </script>
 </body>
