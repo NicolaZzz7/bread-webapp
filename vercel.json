@@ -5,7 +5,11 @@
     { "src": "public/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/catalog", "dest": "api/catalog.js" },
+    { "src": "/api/assets/(.*)", "dest": "/api/assets/$1",
+      "headers": { "Cache-Control": "public, max-age=3600",
+        "Content-Type": "text/css" }
+    },
+    { "src": "/api/catalog", "dest": "/api/catalog.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
