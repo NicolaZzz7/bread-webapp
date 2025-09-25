@@ -1,198 +1,533 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <title>Каталог хлеба</title>
-  <style>
-    :root {
-      /* Светлая тема по умолчанию */
-      --bg-color: #fff;
-      --text-color: #000;
-      --table-bg: #f2f2f2;
-      --border-color: #ddd;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍞 Каталог хлеба</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        /* Тёмная тема */
-        --bg-color: #1a1a1a;
-        --text-color: #e0e0e0;
-        --table-bg: #2d2d2d;
-        --border-color: #444;
-      }
-    }
+        :root {
+            --primary: #48bb78;
+            --primary-dark: #38a169;
+            --bg-color: #ffffff;
+            --text-color: #2d3748;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
 
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-    }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a202c;
+                --text-color: #e2e8f0;
+                --card-bg: #2d3748;
+                --border-color: #4a5568;
+                --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            }
+        }
 
-    h1 {
-      text-align: center;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-      max-width: 100%;
-    }
+        .container {
+            max-width: 100%;
+            padding: 16px;
+        }
 
-    th, td {
-      border: 1px solid var(--border-color);
-      padding: 8px;
-      text-align: left;
-    }
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 20px 0;
+        }
 
-    th {
-      background-color: var(--table-bg);
-      color: var(--text-color);
-    }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
 
-    /* Процентное соотношение колонок */
-    th:nth-child(1), td:nth-child(1) { width: 70%; } /* Название */
-    th:nth-child(2), td:nth-child(2) { width: 15%; } /* 100г */
-    th:nth-child(3), td:nth-child(3) { width: 15%; } /* 500г */
-    th:nth-child(4), td:nth-child(4) { width: 15%; } /* 750г */
+        .header p {
+            color: #718096;
+            font-size: 16px;
+        }
 
-    /* Стили для кликабельных ячеек */
-    td:nth-child(1) { cursor: pointer; }
-    td:nth-child(2), td:nth-child(3), td:nth-child(4) { cursor: pointer; }
-    td:hover { background-color: var(--table-bg); }
+        .search-box {
+            margin-bottom: 20px;
+        }
 
-    /* Модальное окно */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
+        .search-box input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
 
-    .modal-content {
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 15% auto;
-      padding: 20px;
-      width: 70%;
-      max-width: 500px;
-      border-radius: 5px;
-      text-align: left;
-    }
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
 
-    .close {
-      float: right;
-      font-size: 24px;
-      cursor: pointer;
-    }
+        .product-grid {
+            display: grid;
+            gap: 16px;
+        }
 
-    /* Адаптация для мобильных устройств */
-    @media (max-width: 600px) {
-      table {
-        width: 100%;
-        table-layout: auto;
-      }
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
 
-      th, td {
-        padding: 6px;
-        font-size: 14px;
-      }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
 
-      h1 {
-        font-size: 1.2em;
-      }
+        .product-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
 
-      .modal-content {
-        margin: 20% auto;
-        width: 90%;
-      }
-    }
-  </style>
+        .product-emoji {
+            font-size: 40px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+
+        .product-ingredients {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .product-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .price-section {
+            margin-bottom: 16px;
+        }
+
+        .price-options {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .price-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .price-option.selected {
+            border-color: var(--primary);
+            background: rgba(72, 187, 120, 0.1);
+        }
+
+        .price-option .weight {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .price-option .price {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .add-button {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .add-button:hover {
+            background: var(--primary-dark);
+        }
+
+        .add-button:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+        }
+
+        .cart-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .cart-indicator:hover {
+            transform: scale(1.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #718096;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .loading .spinner {
+            font-size: 32px;
+            margin-bottom: 16px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .product-card {
+                padding: 16px;
+            }
+
+            .price-options {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Каталог хлеба</h1>
-  <table id="catalogTable">
-    <tr><th>Название</th><th>100г</th><th>500г</th><th>750г</th></tr>
-  </table>
+    <div class="container">
+        <div class="header">
+            <h1>🍞 Каталог хлеба</h1>
+            <p>Свежая выпечка на закваске</p>
+        </div>
 
-  <!-- Модальное окно для "Подробнее" -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2 id="modalTitle"></h2>
-      <p><strong>Ингредиенты:</strong> <span id="modalIngredients"></span></p>
-      <p><strong>Добавки:</strong> <span id="modalAddons"></span></p>
-      <p><strong>Время приготовления:</strong> <span id="modalPrepTime"></span></p>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или составу...">
+        </div>
+
+        <div id="productGrid" class="product-grid">
+            <div class="loading">
+                <div class="spinner">⏳</div>
+                <div>Загружаем каталог...</div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('catalog')) {
-      fetch('/api/catalog')
-        .then(response => response.json())
-        .then(data => {
-          const table = document.getElementById('catalogTable');
-          for (let breadId in data) {
-            const item = data[breadId];
-            const row = table.insertRow();
-            // Название - кликабельно для "Подробнее"
-            const nameCell = row.insertCell(0);
-            nameCell.innerText = item.name;
-            nameCell.onclick = () => showDetails(breadId, item);
+    <div id="cartIndicator" class="cart-indicator" style="display: none;" onclick="openCart()">
+        <span id="cartCount">0</span>
+    </div>
 
-            // Цены - кликабельны для добавления в корзину
-            row.insertCell(1).innerText = item.price_100 > 0 ? `${item.price_100}₽` : '-';
-            row.insertCell(2).innerText = item.price_500 > 0 ? `${item.price_500}₽` : '-';
-            row.insertCell(3).innerText = item.price_750 > 0 ? `${item.price_750}₽` : '-';
-            row.cells[1].onclick = () => addToCart(breadId, 100, item.price_100);
-            row.cells[2].onclick = () => addToCart(breadId, 500, item.price_500);
-            row.cells[3].onclick = () => addToCart(breadId, 750, item.price_750);
-          }
-        })
-        .catch(error => {
-          console.error('Ошибка загрузки данных:', error);
-          document.getElementById('catalogTable').innerHTML += '<tr><td colspan="4">Ошибка загрузки каталога.</td></tr>';
+    <script>
+        // Глобальные переменные
+        let products = [];
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let selectedWeights = {};
+
+        // Инициализация Telegram Web App
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+
+        // Загрузка каталога
+        async function loadCatalog() {
+            try {
+                const response = await fetch('/api/catalog');
+                if (!response.ok) throw new Error('Ошибка загрузки данных');
+
+                products = await response.json();
+                renderProducts(products);
+                updateCartIndicator();
+
+            } catch (error) {
+                document.getElementById('productGrid').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">😕</div>
+                        <div>Не удалось загрузить каталог</div>
+                        <div style="margin-top: 8px; font-size: 14px;">${error.message}</div>
+                    </div>
+                `;
+                console.error('Error loading catalog:', error);
+            }
+        }
+
+        // Отображение продуктов
+        function renderProducts(productsToRender) {
+            const grid = document.getElementById('productGrid');
+
+            if (!productsToRender || productsToRender.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🔍</div>
+                        <div>Ничего не найдено</div>
+                        <div style="margin-top: 8px; font-size: 14px;">Попробуйте изменить поисковый запрос</div>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = Object.entries(productsToRender).map(([productId, product]) => {
+                const availableWeights = Object.entries(product.prices || {})
+                    .filter(([weight, price]) => price > 0)
+                    .map(([weight, price]) => ({ weight, price }));
+
+                const defaultWeight = availableWeights.length > 0 ? availableWeights[0].weight : null;
+                selectedWeights[productId] = selectedWeights[productId] || defaultWeight;
+
+                return `
+                    <div class="product-card" data-product-id="${productId}">
+                        <div class="product-header">
+                            <div class="product-emoji">${getBreadEmoji(product.name)}</div>
+                            <div class="product-info">
+                                <div class="product-name">${product.name}</div>
+                                <div class="product-ingredients">${product.ingredients || 'Состав не указан'}</div>
+                                <div class="product-meta">
+                                    <div class="meta-item">⏰ ${product.prep_time || '1-2 дня'}</div>
+                                    ${product.addons ? `<div class="meta-item">✨ ${product.addons}</div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        ${availableWeights.length > 0 ? `
+                            <div class="price-section">
+                                <div class="price-options">
+                                    ${availableWeights.map(({weight, price}) => `
+                                        <div class="price-option ${selectedWeights[productId] === weight ? 'selected' : ''}"
+                                             onclick="selectWeight('${productId}', '${weight}')">
+                                            <div class="weight">${weight}г</div>
+                                            <div class="price">${price}₽</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+
+                                <button class="add-button" onclick="addToCart('${productId}')">
+                                    🛒 Добавить в корзину • ${getProductPrice(productId)}₽
+                                </button>
+                            </div>
+                        ` : `
+                            <div style="text-align: center; color: #718096; padding: 10px;">
+                                Нет в наличии
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Получить эмодзи для хлеба
+        function getBreadEmoji(name) {
+            if (name.toLowerCase().includes('ржаной')) return '🍞';
+            if (name.toLowerCase().includes('пшеничный')) return '🥖';
+            if (name.toLowerCase().includes('бородинский')) return '🥨';
+            if (name.toLowerCase().includes('зерновой')) return '🌾';
+            if (name.toLowerCase().includes('сыр')) return '🧀';
+            if (name.toLowerCase().includes('клюкв')) return '🫐';
+            if (name.toLowerCase().includes('шоколад')) return '🍫';
+            return '🍞';
+        }
+
+        // Выбор веса
+        function selectWeight(productId, weight) {
+            selectedWeights[productId] = weight;
+
+            // Обновляем отображение
+            document.querySelectorAll(`[data-product-id="${productId}"] .price-option`).forEach(option => {
+                option.classList.toggle('selected', option.querySelector('.weight').textContent === weight + 'г');
+            });
+
+            // Обновляем кнопку
+            const button = document.querySelector(`[data-product-id="${productId}"] .add-button`);
+            if (button) {
+                button.innerHTML = `🛒 Добавить в корзину • ${getProductPrice(productId)}₽`;
+            }
+        }
+
+        // Получить цену продукта
+        function getProductPrice(productId) {
+            const product = products[productId];
+            const weight = selectedWeights[productId];
+            return product.prices[weight] || 0;
+        }
+
+        // Добавить в корзину
+        function addToCart(productId) {
+            const product = products[productId];
+            const weight = selectedWeights[productId];
+            const price = getProductPrice(productId);
+
+            if (!weight || !price) {
+                showNotification('Выберите вес продукта', 'error');
+                return;
+            }
+
+            const cartItem = {
+                id: productId,
+                name: product.name,
+                weight: weight,
+                price: price,
+                emoji: getBreadEmoji(product.name)
+            };
+
+            cart.push(cartItem);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartIndicator();
+
+            // Вибрация
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+
+            // Уведомление
+            showNotification(`${product.name} (${weight}г) добавлен в корзину!`, 'success');
+        }
+
+        // Обновить индикатор корзины
+        function updateCartIndicator() {
+            const indicator = document.getElementById('cartIndicator');
+            const countElement = document.getElementById('cartCount');
+
+            countElement.textContent = cart.length;
+            indicator.style.display = cart.length > 0 ? 'flex' : 'none';
+        }
+
+        // Показать уведомление
+        function showNotification(message, type = 'info') {
+            Telegram.WebApp.showPopup({
+                title: type === 'success' ? '✅ Успешно' : '⚠️ Внимание',
+                message: message,
+                buttons: [{ type: 'ok' }]
+            });
+        }
+
+        // Открыть корзину
+        function openCart() {
+            if (cart.length === 0) {
+                showNotification('Корзина пуста', 'info');
+                return;
+            }
+
+            const cartSummary = cart.map(item =>
+                `${item.emoji} ${item.name} (${item.weight}г) - ${item.price}₽`
+            ).join('\n');
+
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+            Telegram.WebApp.showConfirm(
+                `Ваша корзина:\n\n${cartSummary}\n\n💎 Итого: ${total}₽`,
+                'Оформить заказ?',
+                (confirmed) => {
+                    if (confirmed) {
+                        Telegram.WebApp.sendData(JSON.stringify({
+                            action: 'checkout',
+                            cart: cart,
+                            total: total
+                        }));
+                    }
+                }
+            );
+        }
+
+        // Поиск
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+
+            if (!searchTerm) {
+                renderProducts(products);
+                return;
+            }
+
+            const filteredProducts = Object.entries(products).reduce((acc, [id, product]) => {
+                if (product.name.toLowerCase().includes(searchTerm) ||
+                    (product.ingredients && product.ingredients.toLowerCase().includes(searchTerm))) {
+                    acc[id] = product;
+                }
+                return acc;
+            }, {});
+
+            renderProducts(filteredProducts);
         });
-    }
 
-    // Показать модальное окно с деталями
-    function showDetails(breadId, item) {
-      document.getElementById('modalTitle').innerText = item.name;
-      document.getElementById('modalIngredients').innerText = item.ingredients || 'Не указано';
-      document.getElementById('modalAddons').innerText = item.addons || 'Нет';
-      document.getElementById('modalPrepTime').innerText = item.prep_time || 'Не указано';
-      document.getElementById('modal').style.display = 'block';
-    }
-
-    // Закрыть модальное окно
-    document.querySelector('.close').onclick = function() {
-      document.getElementById('modal').style.display = 'none';
-    };
-
-    // Закрыть модальное окно при клике вне области
-    window.onclick = function(event) {
-      const modal = document.getElementById('modal');
-      if (event.target == modal) {
-        modal.style.display = 'none';
-      }
-    };
-
-    // Добавить в корзину
-    function addToCart(breadId, weight, price) {
-      if (price > 0) {
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        cart.push({ id: breadId, weight: weight, price: price });
-        localStorage.setItem('cart', JSON.stringify(cart));
-        alert(`Добавлено в корзину: ${breadId} (${weight}г) - ${price}₽`);
-      } else {
-        alert('Этот вес недоступен для покупки.');
-      }
-    }
-  </script>
+        // Загружаем каталог при старте
+        loadCatalog();
+    </script>
 </body>
 </html>
