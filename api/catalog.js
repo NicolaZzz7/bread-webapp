@@ -36,27 +36,14 @@ export default async (req, res) => {
     for (let i = 1; i < rows.length; i++) {
       const [id, name, ingredients, price_100, price_500, price_750, addons, prep_time] = rows[i];
       const breadId = id.toLowerCase().replace(' ', '_');
-
-      // Формируем объект цен, исключая нулевые и невалидные значения
-      const prices = {};
-      if (price_100 && price_100 !== '-' && !isNaN(parseInt(price_100))) prices['100'] = parseInt(price_100);
-      if (price_500 && price_500 !== '-' && !isNaN(parseInt(price_500))) prices['500'] = parseInt(price_500);
-      if (price_750 && price_750 !== '-' && !isNaN(parseInt(price_750))) prices['750'] = parseInt(price_750);
-
-      // Обрабатываем добавки
-      const hasAddons = addons && addons.trim() !== '' && addons !== '-';
-      const addonsPrice = hasAddons ? 50 : 0;
-      const addonsText = hasAddons ? 'семена льна, семечки, тыква (+50₽)' : '';
-
       catalog[breadId] = {
         name: name || 'Без названия',
         ingredients: ingredients || '',
-        prices: prices,
-        hasAddons: hasAddons,
-        addonsPrice: addonsPrice,
-        addonsText: addonsText,
-        prep_time: prep_time || '1-2 дня',
-        baseAddonsPrice: 50 // Фиксированная цена за добавки
+        price_100: price_100 ? parseInt(price_100) : 0,
+        price_500: price_500 ? parseInt(price_500) : 0,
+        price_750: price_750 ? parseInt(price_750) : 0,
+        addons: addons || '',
+        prep_time: prep_time || '',
       };
     }
 
