@@ -2,14 +2,12 @@
   "version": 2,
   "builds": [
     { "src": "api/**/*.js", "use": "@vercel/node" },
-    { "src": "public/**/*", "use": "@vercel/static" }
+    { "src": "public/**/*", "use": "@vercel/static" },
+    { "src": "api/assets/**/*", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/assets/(.*)", "dest": "/api/assets/$1",
-      "headers": { "Cache-Control": "public, max-age=3600",
-        "Content-Type": "text/css" }
-    },
     { "src": "/api/catalog", "dest": "/api/catalog.js" },
+    { "src": "/api/assets/(.*)", "dest": "/api/assets/$1" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
