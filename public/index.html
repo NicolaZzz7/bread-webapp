@@ -37,11 +37,12 @@
       width: 100%;
       border-collapse: collapse;
       margin: 20px 0;
+      max-width: 100%; /* Убедимся, что таблица не превышает экран */
     }
 
     th, td {
       border: 1px solid var(--border-color);
-      padding: 12px;
+      padding: 8px;
       text-align: left;
     }
 
@@ -50,20 +51,26 @@
       color: var(--text-color);
     }
 
-    /* Отзывчивость для мобильных устройств */
+    /* Процентное соотношение колонок */
+    th:nth-child(1), td:nth-child(1) { width: 70%; } /* Название */
+    th:nth-child(2), td:nth-child(2) { width: 15%; } /* 100г */
+    th:nth-child(3), td:nth-child(3) { width: 15%; } /* 500г */
+    th:nth-child(4), td:nth-child(4) { width: 15%; } /* 750г */
+
+    /* Адаптация для мобильных устройств без прокрутки */
     @media (max-width: 600px) {
       table {
-        display: block;
-        overflow-x: auto;
+        width: 100%;
+        table-layout: auto; /* Автоматическая подгонка */
       }
 
       th, td {
-        min-width: 100px;
-        padding: 8px;
+        padding: 6px;
+        font-size: 14px;
       }
 
       h1 {
-        font-size: 1.5em;
+        font-size: 1.2em;
       }
     }
   </style>
