@@ -6,8 +6,8 @@
   ],
   "routes": [
     { "src": "/api/catalog", "dest": "api/catalog.js" },
-    { "src": "/style.css", "dest": "public/style.css" },
-    { "src": "/script.js", "dest": "public/script.js" },
+    { "src": "/style.css", "dest": "api/assets/style.css" },
+    { "src": "/script.js", "dest": "api/assets/script.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
