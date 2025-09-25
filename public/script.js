@@ -1,4 +1,4 @@
-/ Глобальные переменные
+// Глобальные переменные
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let selectedWeights = {};
@@ -273,4 +273,8 @@ function getLoadingHTML() {
     `;
 }
 
+// Привязка события поиска
+document.getElementById('searchInput').addEventListener('input', handleSearch);
+
+// Загружаем каталог при старте
 loadCatalog();
