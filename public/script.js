@@ -44,15 +44,8 @@ function renderProducts(productsToRender) {
   ).join('');
 }
 
-// Создание карточки товара
+// Создание карточки товара (без цен)
 function createProductCard(productId, product) {
-  const availableWeights = getAvailableWeights(product);
-  const defaultWeight = availableWeights.length > 0 ? availableWeights[0].weight : null;
-  selectedWeights[productId] = selectedWeights[productId] || defaultWeight;
-
-  const selectedWeight = availableWeights.find(w => w.weight === selectedWeights[productId]);
-  const price = selectedWeight ? selectedWeight.price : 0;
-
   return `
     <div class="product-card" data-product-id="${productId}" onclick="openProductModal('${productId}')">
       <div class="product-header">
@@ -66,32 +59,8 @@ function createProductCard(productId, product) {
           </div>
         </div>
       </div>
-      
-      ${availableWeights.length > 0 ? `
-        <div class="price-section">
-          <div class="price-options">
-            ${availableWeights.map(({weight, price}) => `
-              <div class="price-option ${selectedWeights[productId] === weight ? 'selected' : ''}" 
-                   onclick="selectWeight('${productId}', '${weight}'); renderProducts(products)">
-                <div class="weight">${weight}г</div>
-                <div class="price">${price}₽</div>
-              </div>
-            `).join('')}
-          </div>
-          <div class="price-badge">Цена: ${price}₽</div>
-        </div>
-      ` : `
-        <div style="text-align: center; color: #718096; padding: 10px;">
-          Нет в наличии
-        </div>
-      `}
     </div>
   `;
-}
-
-// Выбор веса
-function selectWeight(productId, weight) {
-  selectedWeights[productId] = weight;
 }
 
 // Открытие модального окна товара
@@ -107,6 +76,8 @@ function openProductModal(productId) {
   }
 
   const availableWeights = getAvailableWeights(product);
+  const hasAddons = product.addons && product.addons !== '';
+
   const modalHTML = `
     <div class="modal-content">
       <div class="modal-header">
@@ -134,19 +105,19 @@ function openProductModal(productId) {
               </div>
               <div class="quantity-controls">
                 <button class="quantity-btn" onclick="changeWeightQuantity('${weight}', -1)">-</button>
-                <span class="quantity-value">${currentQty}</span>
+                <span class="quantity-value" id="qty-${weight}">${currentQty}</span>
                 <button class="quantity-btn" onclick="changeWeightQuantity('${weight}', 1)">+</button>
               </div>
             </div>
           `;
         }).join('')}
       </div>
-      ${product.addons ? `
+      ${hasAddons ? `
         <div class="addons-section">
           <label class="addons-checkbox">
             <input type="checkbox" ${addonsSelected[productId] ? 'checked' : ''} onchange="toggleAddons(this.checked)">
             <span class="checkmark"></span>
-            Добавки (${product.addons}) +${parseInt(product.addons) || 0}₽
+            Добавки (семена льна, семечки, тыква) +${product.addons}₽
           </label>
         </div>
       ` : ''}
@@ -160,7 +131,7 @@ function openProductModal(productId) {
           <span id="modalTotal">0₽</span>
         </div>
       </div>
-      <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
+      <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart()">
         🛒 Добавить в корзину
       </button>
     </div>
@@ -177,6 +148,8 @@ function changeWeightQuantity(weight, delta) {
   const currentQty = quantities[currentProduct][weight] || 0;
   const newQty = Math.max(0, currentQty + delta);
   quantities[currentProduct][weight] = newQty;
+
+  document.getElementById(`qty-${weight}`).textContent = newQty;
   updateModalSummary();
 }
 
