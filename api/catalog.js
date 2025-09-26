@@ -37,12 +37,12 @@ export default async (req, res) => {
       const breadId = id.toLowerCase().replace(' ', '_');
       catalog[breadId] = {
         name: name || 'Без названия',
-        prices: {
-          100: price_100 ? parseInt(price_100) : 0,
-          500: price_500 ? parseInt(price_500) : 0,
-          750: price_750 ? parseInt(price_750) : 0,
-        },
         ingredients: ingredients || '',
+        prices: {
+          '100': price_100 ? parseInt(price_100) : 0,
+          '500': price_500 ? parseInt(price_500) : 0,
+          '750': price_750 ? parseInt(price_750) : 0,
+        },
         addons: addons || '',
         prep_time: prep_time || '',
       };

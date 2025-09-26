@@ -44,8 +44,12 @@ function renderProducts(productsToRender) {
   ).join('');
 }
 
-// Создание карточки товара (без цен)
+// Создание карточки товара
 function createProductCard(productId, product) {
+  const availableWeights = getAvailableWeights(product);
+  const defaultWeight = availableWeights.length > 0 ? availableWeights[0].weight : null;
+  selectedWeights[productId] = selectedWeights[productId] || defaultWeight;
+
   return `
     <div class="product-card" data-product-id="${productId}" onclick="openProductModal('${productId}')">
       <div class="product-header">
@@ -104,9 +108,9 @@ function openProductModal(productId) {
                 <span class="weight-price">${price}₽</span>
               </div>
               <div class="quantity-controls">
-                <button class="quantity-btn" onclick="changeWeightQuantity('${weight}', -1)">-</button>
-                <span class="quantity-value" id="qty-${weight}">${currentQty}</span>
-                <button class="quantity-btn" onclick="changeWeightQuantity('${weight}', 1)">+</button>
+                <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">-</button>
+                <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">+</button>
               </div>
             </div>
           `;
@@ -115,7 +119,7 @@ function openProductModal(productId) {
       ${hasAddons ? `
         <div class="addons-section">
           <label class="addons-checkbox">
-            <input type="checkbox" ${addonsSelected[productId] ? 'checked' : ''} onchange="toggleAddons(this.checked)">
+            <input type="checkbox" ${addonsSelected[productId] ? 'checked' : ''} onchange="toggleAddons('${productId}', this.checked)">
             <span class="checkmark"></span>
             Добавки (семена льна, семечки, тыква) +${product.addons}₽
           </label>
@@ -131,7 +135,7 @@ function openProductModal(productId) {
           <span id="modalTotal">0₽</span>
         </div>
       </div>
-      <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart()">
+      <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
         🛒 Добавить в корзину
       </button>
     </div>
@@ -139,39 +143,35 @@ function openProductModal(productId) {
 
   document.getElementById('productModal').innerHTML = modalHTML;
   document.getElementById('productModal').style.display = 'block';
-  updateModalSummary();
+  updateModalSummary(productId);
 }
 
 // Изменение количества для конкретного веса
-function changeWeightQuantity(weight, delta) {
-  if (!currentProduct) return;
-  const currentQty = quantities[currentProduct][weight] || 0;
+function changeWeightQuantity(productId, weight, delta) {
+  const currentQty = quantities[productId][weight] || 0;
   const newQty = Math.max(0, currentQty + delta);
-  quantities[currentProduct][weight] = newQty;
-
-  document.getElementById(`qty-${weight}`).textContent = newQty;
-  updateModalSummary();
+  quantities[productId][weight] = newQty;
+  document.getElementById(`qty-${productId}-${weight}`).textContent = newQty;
+  updateModalSummary(productId);
 }
 
 // Переключение чекбокса добавок
-function toggleAddons(checked) {
-  if (!currentProduct) return;
-  addonsSelected[currentProduct] = checked;
-  updateModalSummary();
+function toggleAddons(productId, checked) {
+  addonsSelected[productId] = checked;
+  updateModalSummary(productId);
 }
 
 // Обновление сводки в модальном окне
-function updateModalSummary() {
-  if (!currentProduct) return;
-  const product = products[currentProduct];
-  const addonsPrice = addonsSelected[currentProduct] ? parseInt(product.addons) || 0 : 0;
+function updateModalSummary(productId) {
+  const product = products[productId];
+  const addonsPrice = addonsSelected[productId] ? parseInt(product.addons) || 0 : 0;
 
   let totalItems = 0;
   let totalPrice = 0;
   const weights = getAvailableWeights(product);
 
   weights.forEach(({weight}) => {
-    const qty = quantities[currentProduct][weight] || 0;
+    const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
       const price = product.prices[weight] || 0;
       totalItems += qty;
@@ -179,7 +179,7 @@ function updateModalSummary() {
     }
   });
 
-  if (totalItems > 0 && addonsSelected[currentProduct]) {
+  if (totalItems > 0 && addonsSelected[productId]) {
     totalPrice += addonsPrice * totalItems;
   }
 
@@ -192,28 +192,29 @@ function updateModalSummary() {
 function addToCart(productId) {
   const product = products[productId];
   const weights = getAvailableWeights(product);
+  const addonsPrice = addonsSelected[productId] ? parseInt(product.addons) || 0 : 0;
+
+  let items = [];
   let totalItems = 0;
   let totalPrice = 0;
-  const items = [];
 
   weights.forEach(({weight}) => {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
       const price = product.prices[weight] || 0;
+      const itemTotal = price * qty;
       totalItems += qty;
-      totalPrice += price * qty;
-      items.push({ weight, quantity: qty, price: price * qty });
+      totalPrice += itemTotal;
+      items.push({
+        weight: weight,
+        quantity: qty,
+        price: itemTotal,
+      });
     }
   });
 
-  const addonsPrice = addonsSelected[productId] ? parseInt(product.addons) || 0 : 0;
   if (totalItems > 0 && addonsSelected[productId]) {
     totalPrice += addonsPrice * totalItems;
-  }
-
-  if (totalItems === 0) {
-    showNotification('Выберите количество', 'error');
-    return;
   }
 
   items.forEach(item => {
@@ -243,6 +244,8 @@ function closeProductModal() {
   document.getElementById('productModal').style.display = 'none';
   currentProduct = null;
 }
+
+// ... (остальной код без изменений)
 
 // Вспомогательные функции
 function getAvailableWeights(product) {
