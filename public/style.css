@@ -392,3 +392,141 @@ body {
         padding: 20px;
     }
 }
+
+/* Добавь эти стили в конец файла */
+
+.weight-section {
+    margin: 20px 0;
+}
+
+.section-title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-color);
+}
+
+.weight-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: var(--bg-color);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.weight-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.weight-label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.weight-price {
+    font-size: 14px;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.quantity-btn {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--primary);
+    background: none;
+    color: var(--primary);
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-value {
+    font-size: 16px;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+}
+
+.addons-section {
+    margin: 20px 0;
+    padding: 16px;
+    background: var(--bg-color);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.addons-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.addons-checkbox input {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary);
+    border-radius: 4px;
+    position: relative;
+}
+
+.addons-checkbox input:checked + .checkmark::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.modal-summary {
+    background: var(--bg-color);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.summary-item.total {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--primary);
+    border-top: 1px solid var(--border-color);
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
+.add-to-cart-btn:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+}
+
+.add-to-cart-btn:disabled:hover {
+    background: #a0aec0;
+}

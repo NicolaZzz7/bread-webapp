@@ -2,7 +2,6 @@ import { google } from 'googleapis';
 
 export default async (req, res) => {
   try {
-    // Получаем переменные окружения
     const privateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
     const projectId = process.env.GOOGLE_PROJECT_ID;
@@ -36,12 +35,22 @@ export default async (req, res) => {
     for (let i = 1; i < rows.length; i++) {
       const [id, name, ingredients, price_100, price_500, price_750, addons, prep_time] = rows[i];
       const breadId = id.toLowerCase().replace(' ', '_');
+
+      // Парсим цены, учитывая возможные форматы
+      const parsePrice = (price) => {
+        if (!price || price === '-' || price === '') return 0;
+        const num = parseFloat(price.toString().replace(',', '.'));
+        return isNaN(num) ? 0 : Math.round(num);
+      };
+
       catalog[breadId] = {
         name: name || 'Без названия',
         ingredients: ingredients || '',
-        price_100: price_100 ? parseInt(price_100) : 0,
-        price_500: price_500 ? parseInt(price_500) : 0,
-        price_750: price_750 ? parseInt(price_750) : 0,
+        prices: {
+          '100': parsePrice(price_100),
+          '500': parsePrice(price_500),
+          '750': parsePrice(price_750)
+        },
         addons: addons || '',
         prep_time: prep_time || '',
       };
