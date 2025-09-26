@@ -126,7 +126,7 @@ function openProductModal(productId) {
           <span id="modalTotal">0₽</span>
         </div>
       </div>
-      <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
+      <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart()">
         🛒 Добавить в корзину
       </button>
     </div>
@@ -143,10 +143,12 @@ function changeWeightQuantity(productId, weight, delta) {
   const newQty = Math.max(0, currentQty + delta);
   quantities[productId][weight] = newQty;
 
+  // Обновляем отображение
+  document.getElementById(`qty-${productId}-${weight}`).textContent = newQty;
+
   // Обновляем корзину
   updateCartItem(productId, weight, newQty);
 
-  document.getElementById(`qty-${productId}-${weight}`).textContent = newQty;
   updateModalSummary(productId);
 }
 
@@ -158,51 +160,18 @@ function toggleAddons(productId, weight, checked) {
   updateModalSummary(productId);
 }
 
-// Обновление или создание элемента корзины
-function updateCartItem(productId, weight, quantity) {
-  const product = products[productId];
-  const price = product.prices[weight] || 0;
-  const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
-  const itemTotal = price * quantity + (addonsPrice * quantity);
-
-  // Поиск существующего элемента в корзине
-  const existingIndex = cart.findIndex(item => item.id === productId && item.weight === weight);
-  if (quantity === 0 && existingIndex !== -1) {
-    cart.splice(existingIndex, 1); // Удаляем, если количество стало 0
-  } else if (quantity > 0) {
-    const cartItem = {
-      id: productId,
-      name: product.name,
-      weight: weight,
-      quantity: quantity,
-      price: itemTotal,
-      hasAddons: addonsSelected[productId]?.[weight] || false,
-      total: itemTotal,
-      emoji: getBreadEmoji(product.name),
-      timestamp: Date.now()
-    };
-    if (existingIndex !== -1) {
-      cart[existingIndex] = cartItem; // Обновляем
-    } else {
-      cart.push(cartItem); // Добавляем новый
-    }
-  }
-  saveCart();
-  updateCartIndicator();
-}
-
 // Обновление сводки в модальном окне
 function updateModalSummary(productId) {
   const product = products[productId];
+  const availableWeights = getAvailableWeights(product);
+
   let totalItems = 0;
   let totalPrice = 0;
-  const weights = getAvailableWeights(product);
 
-  weights.forEach(({weight}) => {
+  availableWeights.forEach(({weight, price}) => {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
-      const price = product.prices[weight] || 0;
-      const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
+      const addonsPrice = addonsSelected[productId][weight] ? parseInt(product.addons) || 0 : 0;
       totalItems += qty;
       totalPrice += (price + addonsPrice) * qty;
     }
@@ -215,18 +184,8 @@ function updateModalSummary(productId) {
 
 // Добавление в корзину (теперь просто синхронизация)
 function addToCart(productId) {
-  const product = products[productId];
-  const weights = getAvailableWeights(product);
-
-  weights.forEach(({weight}) => {
-    const qty = quantities[productId][weight] || 0;
-    if (qty > 0) {
-      updateCartItem(productId, weight, qty);
-    }
-  });
-
   closeProductModal();
-  showNotification(`${getTotalItems()} x ${product.name} обновлено в корзине за ${getTotalPrice()}₽!`, 'success');
+  showNotification(`${getTotalItems()} x ${products[productId].name} обновлено в корзине за ${getTotalPrice()}₽!`, 'success');
 }
 
 // Закрытие модального окна
@@ -261,9 +220,10 @@ function saveCart() {
 }
 
 function updateCartIndicator() {
-  const totalItems = getTotalItems();
   const indicator = document.getElementById('cartIndicator');
   const countElement = document.getElementById('cartCount');
+  const totalItems = getTotalItems();
+
   if (indicator && countElement) {
     countElement.textContent = totalItems;
     indicator.style.display = totalItems > 0 ? 'flex' : 'none';
