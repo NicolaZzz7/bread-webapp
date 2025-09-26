@@ -6,6 +6,9 @@ let currentProduct = null;
 let quantities = {};
 let addonsSelected = {};
 
+// Очистка корзины от undefined
+cart = cart.filter(item => item && item.name && item.name !== 'undefined');
+
 // Инициализация Telegram Web App
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();

@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍞 Каталог хлеба</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍞 Каталог хлеба</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🍞 Каталог хлеба</h1>
-            <p>Свежая выпечка на закваске</p>
-        </div>
-
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или составу...">
-        </div>
-
-        <div id="productGrid" class="product-grid">
-            <div class="loading">
-                <div class="spinner">⏳</div>
-                <div>Загружаем каталог...</div>
-            </div>
-        </div>
-
-        <button class="add-button" onclick="window.location.href = '/cart.html'">Перейти в корзину</button>
+  <div class="container">
+    <div class="header">
+      <h1>🍞 Каталог хлеба</h1>
+      <p>Свежая выпечка на закваске</p>
     </div>
 
-    <div id="cartIndicator" class="cart-indicator" onclick="window.location.href = '/cart.html'">
-        <span id="cartCount">0</span>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или составу...">
     </div>
-    <!-- Модальное окно -->
-    <div id="productModal" class="modal"></div>
-    <script src="/script.js"></script>
+
+    <div id="productGrid" class="product-grid">
+      <div class="loading">
+        <div class="spinner">⏳</div>
+        <div>Загружаем каталог...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cartIndicator" class="cart-indicator" onclick="openCart()">
+    <span id="cartCount">0</span>
+  </div>
+
+  <!-- Модальное окно -->
+  <div id="productModal" class="modal"></div>
+
+  <script src="/script.js"></script>
 </body>
 </html>
