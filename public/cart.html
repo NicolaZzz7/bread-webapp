@@ -28,9 +28,63 @@
             </div>
         </div>
 
-        <button class="add-to-cart-btn" id="checkoutBtn" onclick="openCart()">Оформить заказ</button>
+        <button class="add-to-cart-btn" id="checkoutBtn" onclick="checkout()">Оформить заказ</button>
     </div>
 
     <script src="/script.js"></script>
+    <script>
+        // Инициализация корзины на странице cart.html
+        document.addEventListener('DOMContentLoaded', function() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            renderCart(cart);
+            updateCartTotal();
+        });
+
+        function renderCart(cart) {
+            const grid = document.getElementById('cartGrid');
+            if (!cart || cart.length === 0) {
+                grid.innerHTML = getEmptyStateHTML('🛒', 'Корзина пуста', 'Добавьте товары из каталога');
+                return;
+            }
+            grid.innerHTML = cart.map(item =>
+                `<div class="product-card">
+                    <div class="product-header">
+                        <div class="product-emoji">${item.emoji}</div>
+                        <div class="product-info">
+                            <div class="product-name">${item.name} (${item.weight}г) ${item.hasAddons ? 'с добавками' : ''}</div>
+                            <div class="product-ingredients">x${item.quantity} - ${item.total}₽</div>
+                        </div>
+                        <button class="add-button" onclick="removeFromCart('${item.id}', '${item.weight}')">Удалить</button>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        function removeFromCart(productId, weight) {
+            cart = cart.filter(item => !(item.id === productId && item.weight === weight));
+            saveCart();
+            renderCart(cart);
+            updateCartTotal();
+            updateCartIndicator();
+        }
+
+        function updateCartTotal() {
+            const total = getTotalPrice();
+            document.getElementById('cartTotal').textContent = `${total}₽`;
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Корзина пуста');
+                return;
+            }
+            Telegram.WebApp.sendData(JSON.stringify({
+                action: 'checkout',
+                cart: cart,
+                total: getTotalPrice(),
+                totalItems: getTotalItems()
+            }));
+        }
+    </script>
 </body>
 </html>
