@@ -530,37 +530,3 @@ body {
 .add-to-cart-btn:disabled:hover {
     background: #a0aec0;
 }
-
-/* ... (ваши существующие стили) */
-
-.quantity-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 12px 0;
-}
-
-.quantity-section label {
-  font-size: 14px;
-  color: var(--text-color);
-}
-
-.quantity-section button {
-  padding: 4px 8px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.quantity-section button:hover {
-  background: var(--primary-dark);
-}
-
-.quantity-section span {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-color);
-}

@@ -1,8 +1,9 @@
 // Глобальные переменные
 let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
-let selectedWeights = {};
-let selectedQuantities = {}; // Для хранения выбранного количества
+let currentProduct = null;
+let quantities = {};
+let addonsSelected = {};
 
 // Инициализация Telegram Web App
 Telegram.WebApp.ready();
@@ -10,201 +11,257 @@ Telegram.WebApp.expand();
 
 // Загрузка каталога
 async function loadCatalog() {
-  console.log('Начало загрузки каталога');
-  try {
-    const response = await fetch('/api/catalog');
-    console.log('Response status:', response.status);
-    if (!response.ok) throw new Error('Ошибка загрузки данных: ' + response.status);
-    const rawData = await response.json();
-    console.log('Данные получены:', rawData);
-
-    // Преобразование данных
-    products = Object.fromEntries(
-      Object.entries(rawData).map(([id, product]) => [
-        id,
-        {
-          ...product,
-          prices: {
-            100: product.price_100 || 0,
-            500: product.price_500 || 0,
-            750: product.price_750 || 0
-          }
+    console.log('Начало загрузки каталога');
+    try {
+        const response = await fetch('/api/catalog');
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error('Ошибка загрузки данных: ' + response.status);
         }
-      ])
-    );
-    renderProducts(products);
-    updateCartIndicator();
-  } catch (error) {
-    console.error('Ошибка загрузки данных:', error);
-    document.getElementById('productGrid').innerHTML = `
-      <div class="empty-state">
-        <div class="icon">😕</div>
-        <div>Не удалось загрузить каталог</div>
-        <div style="margin-top: 8px; font-size: 14px;">${error.message}</div>
-      </div>
-    `;
-  }
+        const data = await response.json();
+        console.log('Данные получены:', data);
+        products = data;
+        renderProducts(products);
+        updateCartIndicator();
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        showErrorState(error.message);
+    }
 }
 
 // Отображение продуктов
 function renderProducts(productsToRender) {
-  const grid = document.getElementById('productGrid');
+    const grid = document.getElementById('productGrid');
 
-  if (!productsToRender || Object.keys(productsToRender).length === 0) {
-    grid.innerHTML = getEmptyStateHTML('🔍', 'Ничего не найдено', 'Попробуйте изменить поисковый запрос');
-    return;
-  }
+    if (!productsToRender || Object.keys(productsToRender).length === 0) {
+        grid.innerHTML = getEmptyStateHTML('🔍', 'Ничего не найдено', 'Попробуйте изменить поисковый запрос');
+        return;
+    }
 
-  grid.innerHTML = Object.entries(productsToRender).map(([productId, product]) =>
-    createProductCard(productId, product)
-  ).join('');
+    grid.innerHTML = Object.entries(productsToRender).map(([productId, product]) =>
+        createProductCard(productId, product)
+    ).join('');
 }
 
 // Создание карточки товара
 function createProductCard(productId, product) {
-  const availableWeights = getAvailableWeights(product);
-  const defaultWeight = availableWeights.length > 0 ? availableWeights[0].weight : null;
-  selectedWeights[productId] = selectedWeights[productId] || defaultWeight;
-  selectedQuantities[productId] = selectedQuantities[productId] || 1; // По умолчанию 1
+    const availableWeights = getAvailableWeights(product);
+    const minPrice = availableWeights.length > 0 ? Math.min(...availableWeights.map(w => w.price)) : 0;
 
-  return `
-    <div class="product-card" data-product-id="${productId}">
-      <div class="product-header">
-        <div class="product-emoji">${getBreadEmoji(product.name)}</div>
-        <div class="product-info">
-          <div class="product-name">${product.name}</div>
-          <div class="product-ingredients">${product.ingredients || 'Состав не указан'}</div>
-          <div class="product-meta">
-            <div class="meta-item">⏰ ${product.prep_time || '1-2 дня'}</div>
-            ${product.addons ? `<div class="meta-item">✨ ${product.addons}</div>` : ''}
-          </div>
+    return `
+        <div class="product-card" onclick="openProductModal('${productId}')">
+            <div class="product-header">
+                <div class="product-emoji">${getBreadEmoji(product.name)}</div>
+                <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-ingredients">${product.ingredients || 'Состав не указан'}</div>
+                    <div class="product-meta">
+                        <div class="meta-item">⏰ ${product.prep_time || '1-2 дня'}</div>
+                        ${product.addons ? `<div class="meta-item">✨ Добавки +${product.addons}₽</div>` : ''}
+                    </div>
+                </div>
+            </div>
+            
+            ${availableWeights.length > 0 ? `
+                <div style="text-align: center;">
+                    <div class="price-badge">от ${minPrice}₽</div>
+                </div>
+            ` : ''}
         </div>
-      </div>
-      
-      ${availableWeights.length > 0 ? `
-        <div class="price-section">
-          <div class="price-options">
-            ${availableWeights.map(({weight, price}) => `
-              <div class="price-option ${selectedWeights[productId] === weight ? 'selected' : ''}" 
-                   onclick="selectWeight('${productId}', '${weight}')">
-                <div class="weight">${weight}г</div>
-                <div class="price">${price}₽</div>
-              </div>
-            `).join('')}
-          </div>
-          
-          <div class="quantity-section">
-            <label>Количество:</label>
-            <button onclick="changeQuantity('${productId}', -1)">-</button>
-            <span id="quantity-${productId}">${selectedQuantities[productId]}</span>
-            <button onclick="changeQuantity('${productId}', 1)">+</button>
-          </div>
-          
-          <button class="add-button" onclick="addToCart('${productId}')">
-            🛒 Добавить в корзину • ${getTotalPrice(productId)}₽
-          </button>
+    `;
+}
+
+// Открытие модального окна товара
+function openProductModal(productId) {
+    currentProduct = productId;
+    const product = products[productId];
+
+    // Инициализируем количества для каждого веса
+    if (!quantities[productId]) {
+        quantities[productId] = {};
+    }
+
+    // Инициализируем чекбокс добавок
+    if (!addonsSelected[productId]) {
+        addonsSelected[productId] = false;
+    }
+
+    const availableWeights = getAvailableWeights(product);
+    const hasAddons = product.addons && product.addons !== '';
+
+    const modalHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">${product.name}</div>
+                <button class="close-modal" onclick="closeProductModal()">×</button>
+            </div>
+            
+            <div class="modal-emoji">${getBreadEmoji(product.name)}</div>
+            
+            <div class="modal-details">
+                <div class="detail-item">
+                    <span class="detail-label">Состав:</span> ${product.ingredients || 'Не указан'}
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
+                </div>
+            </div>
+            
+            <div class="weight-section">
+                <div class="section-title">Выберите вес и количество:</div>
+                
+                ${availableWeights.map(({weight, price}) => {
+                    const currentQty = quantities[productId][weight] || 0;
+                    return `
+                        <div class="weight-row">
+                            <div class="weight-info">
+                                <span class="weight-label">${weight}г</span>
+                                <span class="weight-price">${price}₽</span>
+                            </div>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="changeWeightQuantity('${weight}', -1)">-</button>
+                                <span class="quantity-value">${currentQty}</span>
+                                <button class="quantity-btn" onclick="changeWeightQuantity('${weight}', 1)">+</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            
+            ${hasAddons ? `
+                <div class="addons-section">
+                    <label class="addons-checkbox">
+                        <input type="checkbox" 
+                               ${addonsSelected[productId] ? 'checked' : ''}
+                               onchange="toggleAddons(this.checked)">
+                        <span class="checkmark"></span>
+                        Добавки (семена льна, семечки, тыква) +${product.addons}₽
+                    </label>
+                </div>
+            ` : ''}
+            
+            <div class="modal-summary">
+                <div class="summary-item">
+                    <span>Товаров:</span>
+                    <span id="totalItems">0 шт</span>
+                </div>
+                <div class="summary-item total">
+                    <span>Итого:</span>
+                    <span id="modalTotal">0₽</span>
+                </div>
+            </div>
+            
+            <button class="add-to-cart-btn" onclick="addToCart()" id="addToCartBtn">
+                🛒 Добавить в корзину
+            </button>
         </div>
-      ` : `
-        <div style="text-align: center; color: #718096; padding: 10px;">
-          Нет в наличии
-        </div>
-      `}
-    </div>
-  `;
+    `;
+
+    document.getElementById('productModal').innerHTML = modalHTML;
+    document.getElementById('productModal').style.display = 'block';
+    updateModalSummary();
 }
 
-// Получить доступные веса
-function getAvailableWeights(product) {
-  return Object.entries(product.prices || {})
-    .filter(([weight, price]) => price > 0)
-    .map(([weight, price]) => ({ weight: parseInt(weight), price }));
+// Изменение количества для конкретного веса
+function changeWeightQuantity(weight, delta) {
+    if (!currentProduct) return;
+
+    const currentQty = quantities[currentProduct][weight] || 0;
+    const newQty = Math.max(0, currentQty + delta);
+
+    quantities[currentProduct][weight] = newQty;
+
+    // Обновляем отображение количества
+    const quantityElement = document.querySelector(`.weight-row .weight-label:contains('${weight}г')`).closest('.weight-row').querySelector('.quantity-value');
+    if (quantityElement) {
+        quantityElement.textContent = newQty;
+    }
+
+    updateModalSummary();
 }
 
-// Получить эмодзи для хлеба
-function getBreadEmoji(name) {
-  const nameLower = name.toLowerCase();
-  if (nameLower.includes('ржаной')) return '🍞';
-  if (nameLower.includes('пшеничный')) return '🥖';
-  if (nameLower.includes('бородинский')) return '🥨';
-  if (nameLower.includes('зерновой') || nameLower.includes('цельнозерновой')) return '🌾';
-  if (nameLower.includes('сыр')) return '🧀';
-  if (nameLower.includes('клюкв')) return '🫐';
-  if (nameLower.includes('шоколад')) return '🍫';
-  if (nameLower.includes('деревенск')) return '🏡';
-  return '🍞';
+// Переключение чекбокса добавок
+function toggleAddons(checked) {
+    if (!currentProduct) return;
+    addonsSelected[currentProduct] = checked;
+    updateModalSummary();
 }
 
-// Выбор веса
-function selectWeight(productId, weight) {
-  selectedWeights[productId] = weight;
-  updateProductCard(productId);
+// Обновление сводки в модальном окне
+function updateModalSummary() {
+    if (!currentProduct) return;
+
+    const product = products[currentProduct];
+    const addonsPrice = addonsSelected[currentProduct] ? parseInt(product.addons) || 0 : 0;
+
+    let totalItems = 0;
+    let totalPrice = 0;
+
+    // Считаем общее количество и стоимость
+    Object.entries(quantities[currentProduct] || {}).forEach(([weight, quantity]) => {
+        if (quantity > 0) {
+            const price = product.prices[weight] || 0;
+            totalItems += quantity;
+            totalPrice += price * quantity;
+        }
+    });
+
+    // Добавляем стоимость добавок (если есть выбранные товары)
+    if (totalItems > 0 && addonsSelected[currentProduct]) {
+        totalPrice += addonsPrice * totalItems;
+    }
+
+    // Обновляем отображение
+    document.getElementById('totalItems').textContent = `${totalItems} шт`;
+    document.getElementById('modalTotal').textContent = `${totalPrice}₽`;
+
+    // Активируем/деактивируем кнопку
+    const addButton = document.getElementById('addToCartBtn');
+    addButton.disabled = totalItems === 0;
 }
 
-// Обновление карточки товара
-function updateProductCard(productId) {
-  const productElement = document.querySelector(`[data-product-id="${productId}"]`);
-  if (!productElement) return;
+// Добавление в корзину
+function addToCart() {
+    if (!currentProduct) return;
 
-  const priceOptions = productElement.querySelectorAll('.price-option');
-  priceOptions.forEach(option => {
-    const optionWeight = option.querySelector('.weight').textContent.replace('г', '');
-    option.classList.toggle('selected', optionWeight === selectedWeights[productId]);
-  });
+    const product = products[currentProduct];
+    const addonsPrice = addonsSelected[currentProduct] ? parseInt(product.addons) || 0 : 0;
 
-  const button = productElement.querySelector('.add-button');
-  if (button) button.innerHTML = `🛒 Добавить в корзину • ${getTotalPrice(productId)}₽`;
+    // Создаем отдельные позиции для каждого веса с количеством > 0
+    Object.entries(quantities[currentProduct] || {}).forEach(([weight, quantity]) => {
+        if (quantity > 0) {
+            const basePrice = product.prices[weight] || 0;
+            const finalPrice = basePrice + addonsPrice;
+            const totalPrice = finalPrice * quantity;
+
+            const cartItem = {
+                id: currentProduct,
+                name: product.name,
+                weight: weight,
+                quantity: quantity,
+                basePrice: basePrice,
+                addonsPrice: addonsPrice,
+                finalPrice: finalPrice,
+                total: totalPrice,
+                hasAddons: addonsSelected[currentProduct],
+                emoji: getBreadEmoji(product.name),
+                timestamp: Date.now()
+            };
+
+            cart.push(cartItem);
+        }
+    });
+
+    if (cart.length > 0) {
+        saveCart();
+        updateCartIndicator();
+        closeProductModal();
+
+        const totalItems = Object.values(quantities[currentProduct] || {}).reduce((sum, qty) => sum + qty, 0);
+        Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        showNotification(`${product.name} добавлено в корзину! (${totalItems} шт)`, 'success');
+    }
 }
-
-// Изменение количества
-function changeQuantity(productId, delta) {
-  let quantity = selectedQuantities[productId] || 1;
-  quantity = Math.max(1, quantity + delta); // Не меньше 1
-  selectedQuantities[productId] = quantity;
-  updateProductCard(productId);
-  document.getElementById(`quantity-${productId}`).textContent = quantity;
-}
-
-// Получить общую цену (цена за вес * количество)
-function getTotalPrice(productId) {
-  const product = products[productId];
-  const weight = selectedWeights[productId];
-  const quantity = selectedQuantities[productId] || 1;
-  const pricePerUnit = product.prices[weight] || 0;
-  return pricePerUnit * quantity;
-}
-
-// Добавить в корзину
-function addToCart(productId) {
-  const product = products[productId];
-  const weight = selectedWeights[productId];
-  const quantity = selectedQuantities[productId] || 1;
-  const pricePerUnit = product.prices[weight] || 0;
-  const totalPrice = pricePerUnit * quantity;
-
-  if (!weight || !pricePerUnit) {
-    showNotification('Выберите вес продукта', 'error');
-    return;
-  }
-
-  const cartItem = {
-    id: productId,
-    name: product.name,
-    weight: weight,
-    quantity: quantity,
-    price: totalPrice,
-    emoji: getBreadEmoji(product.name),
-    timestamp: Date.now()
-  };
-
-  cart.push(cartItem);
-  saveCart();
-  updateCartIndicator();
-
-  Telegram.WebApp.HapticFeedback.impactOccurred('light');
-  showNotification(`${product.name} (${weight}г, ${quantity} шт.) добавлен в корзину!`, 'success');
-}
-
-
 
 // Закрытие модального окна
 function closeProductModal() {
@@ -335,7 +392,4 @@ document.addEventListener('click', function(e) {
 document.getElementById('searchInput').addEventListener('input', handleSearch);
 
 // Загружаем каталог при старте
-
-
-document.getElementById('searchInput').addEventListener('input', handleSearch);
 loadCatalog();
