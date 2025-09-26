@@ -530,3 +530,30 @@ body {
 .add-to-cart-btn:disabled:hover {
     background: #a0aec0;
 }
+
+/* ... (предыдущие стили) */
+
+.quantity-section {
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+}
+
+.quantity-section label {
+  margin-right: 10px;
+  color: var(--text-color);
+}
+
+.quantity-section input {
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--text-color);
+  background: var(--card-bg);
+  transition: border-color 0.3s;
+}
+
+.quantity-section input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
