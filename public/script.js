@@ -142,7 +142,10 @@ function changeWeightQuantity(productId, weight, delta) {
   const currentQty = quantities[productId][weight] || 0;
   const newQty = Math.max(0, currentQty + delta);
   quantities[productId][weight] = newQty;
+
+  // Обновляем корзину
   updateCartItem(productId, weight, newQty);
+
   document.getElementById(`qty-${productId}-${weight}`).textContent = newQty;
   updateModalSummary(productId);
 }
@@ -155,18 +158,51 @@ function toggleAddons(productId, weight, checked) {
   updateModalSummary(productId);
 }
 
+// Обновление или создание элемента корзины
+function updateCartItem(productId, weight, quantity) {
+  const product = products[productId];
+  const price = product.prices[weight] || 0;
+  const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
+  const itemTotal = price * quantity + (addonsPrice * quantity);
+
+  // Поиск существующего элемента в корзине
+  const existingIndex = cart.findIndex(item => item.id === productId && item.weight === weight);
+  if (quantity === 0 && existingIndex !== -1) {
+    cart.splice(existingIndex, 1); // Удаляем, если количество стало 0
+  } else if (quantity > 0) {
+    const cartItem = {
+      id: productId,
+      name: product.name,
+      weight: weight,
+      quantity: quantity,
+      price: itemTotal,
+      hasAddons: addonsSelected[productId]?.[weight] || false,
+      total: itemTotal,
+      emoji: getBreadEmoji(product.name),
+      timestamp: Date.now()
+    };
+    if (existingIndex !== -1) {
+      cart[existingIndex] = cartItem; // Обновляем
+    } else {
+      cart.push(cartItem); // Добавляем новый
+    }
+  }
+  saveCart();
+  updateCartIndicator();
+}
+
 // Обновление сводки в модальном окне
 function updateModalSummary(productId) {
   const product = products[productId];
-  const availableWeights = getAvailableWeights(product);
   let totalItems = 0;
   let totalPrice = 0;
+  const weights = getAvailableWeights(product);
 
-  availableWeights.forEach(({weight}) => {
+  weights.forEach(({weight}) => {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
       const price = product.prices[weight] || 0;
-      const addonsPrice = addonsSelected[productId][weight] ? parseInt(product.addons) || 0 : 0;
+      const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
       totalItems += qty;
       totalPrice += (price + addonsPrice) * qty;
     }
@@ -180,10 +216,9 @@ function updateModalSummary(productId) {
 // Добавление в корзину (теперь просто синхронизация)
 function addToCart(productId) {
   const product = products[productId];
-  const availableWeights = getAvailableWeights(product);
-  const hasAddons = product.addons && product.addons !== '';
+  const weights = getAvailableWeights(product);
 
-  availableWeights.forEach(({weight}) => {
+  weights.forEach(({weight}) => {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
       updateCartItem(productId, weight, qty);
@@ -203,7 +238,7 @@ function closeProductModal() {
 // Вспомогательные функции
 function getAvailableWeights(product) {
   return Object.entries(product.prices || {})
-    .filter(([weight, price]) => price > 0)
+    .filter(([_, price]) => price > 0)
     .map(([weight, price]) => ({ weight, price }));
 }
 
@@ -281,7 +316,7 @@ function handleSearch(e) {
 // Открытие корзины
 function openCart() {
   if (cart.length === 0) {
-    showNotification('Корзина пуста', 'info');
+    alert('Корзина пуста');
     return;
   }
 
@@ -292,7 +327,7 @@ function openCart() {
   const total = getTotalPrice();
   const totalItems = getTotalItems();
 
-  showNotification(`🛒 Ваша корзина (${totalItems} товаров):\n\n${cartSummary}\n\n💎 Итого: ${total}₽`, 'info');
+  alert(`🛒 Ваша корзина (${totalItems} товаров):\n\n${cartSummary}\n\n💎 Итого: ${total}₽`);
 }
 
 // Показ уведомления
