@@ -81,7 +81,9 @@ function openProductModal(productId) {
 
   if (!quantities[productId]) quantities[productId] = {};
   if (!addonsSelected[productId]) addonsSelected[productId] = {};
-
+  
+  const availableWeights = getAvailableWeights(product);
+  const hasAddons = product.addons && product.addons !== '';
   
   // Загрузка актуального количества из корзины
   availableWeights.forEach(({weight}) => {
@@ -90,7 +92,7 @@ function openProductModal(productId) {
     addonsSelected[productId][weight] = existingItem ? existingItem.hasAddons : false;
   });
 
-
+  
 
   const modalHTML = `
     <div class="modal-content">
