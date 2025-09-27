@@ -252,7 +252,7 @@ function updateCartIndicator() {
 
   if (indicator && countElement) {
     countElement.textContent = totalItems;
-    indicator.style.display = totalItems > 0 ? 'flex' : 'none';
+    indicator.classList.toggle('visible', totalItems > 0);
   }
 }
 
@@ -305,28 +305,38 @@ function openCart() {
     showNotification('Корзина пуста', 'info');
     return;
   }
-  window.location.href = '/cart.html';
+  showNotification('Переходим в корзину...', 'success');
+  setTimeout(() => {
+    window.location.href = '/cart.html';
+  }, 1000);
 }
 
 function showNotification(message, type = 'info') {
   let notification = document.getElementById('notification');
-  if (!notification) {
-    notification = document.createElement('div');
-    notification.id = 'notification';
-    document.body.appendChild(notification);
+  if (notification) {
+    notification.remove(); // Удаляем старое уведомление, если оно есть
   }
 
-  notification.classList.remove('success', 'error', 'info');
-  notification.classList.add(type);
-
+  notification = document.createElement('div');
+  notification.id = 'notification';
+  notification.className = 'notification'; // Добавляем базовый класс
+  notification.classList.add(type); // Добавляем тип (success, error, info)
   notification.textContent = message;
-  notification.style.opacity = '1';
+  document.body.appendChild(notification);
 
+  // Показываем уведомление
   setTimeout(() => {
-    notification.style.opacity = '0';
+    notification.classList.add('visible');
+  }, 10); // Небольшая задержка для анимации
+
+  // Скрываем и удаляем через 3 секунды
+  setTimeout(() => {
+    notification.classList.remove('visible');
     setTimeout(() => {
-      if (notification.parentNode) notification.parentNode.removeChild(notification);
-    }, 300);
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300); // Ждем завершения анимации
   }, 3000);
 }
 
@@ -420,13 +430,12 @@ function clearCache() {
   loadCatalog();
 }
 
-
-// Обработчик для кнопки "Оформить заказ"
 document.getElementById('checkoutBtn')?.addEventListener('click', () => {
   if (cart.length === 0) {
     showNotification('Корзина пуста', 'info');
     return;
   }
+  showNotification('Оформляем заказ...', 'success');
   const data = { action: 'checkout', cart: cart, total: getTotalPrice(), totalItems: getTotalItems() };
   Telegram.WebApp.sendData(JSON.stringify(data));
 });
