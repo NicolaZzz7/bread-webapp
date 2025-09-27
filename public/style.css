@@ -237,7 +237,9 @@ body {
     padding: 12px;
     background: var(--bg-color);
     border-radius: 12px;
+    gap: 12px;
 }
+
 
 .quantity-btn {
     width: 36px;
@@ -286,8 +288,9 @@ body {
 }
 
 .weight-price {
-    font-weight: 600;
+    font-size: 14px;
     color: var(--primary);
+    font-weight: 600;
 }
 
 .modal-total {
@@ -393,7 +396,6 @@ body {
     }
 }
 
-/* Добавь эти стили в конец файла */
 
 .weight-section {
     margin: 20px 0;
@@ -416,49 +418,9 @@ body {
     border: 1px solid var(--border-color);
 }
 
-.weight-info {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
 .weight-label {
     font-weight: 600;
     color: var(--text-color);
-}
-
-.weight-price {
-    font-size: 14px;
-    color: var(--primary);
-    font-weight: 600;
-}
-
-.quantity-controls {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.quantity-btn {
-    width: 32px;
-    height: 32px;
-    border: 2px solid var(--primary);
-    background: none;
-    color: var(--primary);
-    border-radius: 50%;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.quantity-value {
-    font-size: 16px;
-    font-weight: 600;
-    min-width: 30px;
-    text-align: center;
 }
 
 .addons-section {
@@ -531,8 +493,6 @@ body {
     background: #a0aec0;
 }
 
-/* ... (предыдущие стили) */
-
 .quantity-section {
   margin: 10px 0;
   display: flex;
@@ -558,8 +518,6 @@ body {
   border-color: var(--primary);
 }
 
-/* ... (существующие стили) */
-
 /* Стили для уведомления */
 #notification {
   position: fixed;
@@ -578,53 +536,6 @@ body {
 
 #notification.error {
   background: #e53e3e;
-}
-
-.product-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.product-header {
-  display: flex;
-  align-items: center;
-}
-
-.product-emoji {
-  font-size: 24px;
-  margin-right: 10px;
-}
-
-.product-info {
-  flex-grow: 1;
-}
-
-.product-name {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.product-ingredients {
-  font-size: 14px;
-  color: #718096;
-  margin-bottom: 5px;
-}
-
-.product-meta {
-  display: flex;
-  gap: 10px;
-}
-
-.meta-item {
-  font-size: 12px;
-  color: #718096;
 }
 
 .addons-checkbox {
