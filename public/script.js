@@ -77,9 +77,9 @@ function openProductModal(productId) {
 
   // Загрузка актуального количества из корзины
   availableWeights.forEach(({weight}) => {
-    const existingItem = cart.find(item => item.id === productId && item.weight === weight);
-    quantities[productId][weight] = existingItem ? existingItem.quantity : 0;
-    addonsSelected[productId][weight] = existingItem ? existingItem.hasAddons : false;
+    const matchingItems = cart.filter(item => item.id === productId && item.weight === weight && item.hasAddons === (addonsSelected[productId][weight] || false));
+    quantities[productId][weight] = matchingItems.length;
+    addonsSelected[productId][weight] = matchingItems.length > 0 ? matchingItems[0].hasAddons : false;
   });
 
   const modalHTML = `
@@ -147,31 +147,36 @@ function openProductModal(productId) {
 
 // Изменение количества для конкретного веса
 function changeWeightQuantity(productId, weight, delta) {
+  const product = products[productId];
   const currentQty = quantities[productId][weight] || 0;
   const newQty = Math.max(0, currentQty + delta);
   quantities[productId][weight] = newQty;
 
+  // Обновляем корзину
+  updateCartItem(productId, weight, delta);
+
   // Обновляем отображение
   document.getElementById(`qty-${productId}-${weight}`).textContent = newQty;
 
-  // Обновляем корзину
-  updateCartItem(productId, weight, newQty);
-
-  updateModalSummary(productId);
-
   // Уведомление
   if (delta > 0) {
-    showNotification(`Добавлен 1 шт ${products[productId].name} (${weight}г)`, 'success');
-  } else if (delta < 0) {
-    showNotification(`Удалён 1 шт ${products[productId].name} (${weight}г)`, 'success');
+    showNotification(`Добавлен ${product.name} (${weight}г)`, 'success');
+  } else if (delta < 0 && currentQty > 0) {
+    showNotification(`Удалён ${product.name} (${weight}г)`, 'success');
   }
+
+  updateModalSummary(productId);
 }
 
 // Переключение чекбокса добавок
 function toggleAddons(productId, weight, checked) {
   if (!addonsSelected[productId]) addonsSelected[productId] = {};
   addonsSelected[productId][weight] = checked;
-  updateCartItem(productId, weight, quantities[productId][weight] || 0);
+
+  // Удаляем все items для этого веса и пересоздаём
+  const currentQty = quantities[productId][weight] || 0;
+  cart = cart.filter(item => !(item.id === productId && item.weight === weight));
+  updateCartItem(productId, weight, currentQty);
   updateModalSummary(productId);
 }
 
@@ -186,7 +191,7 @@ function updateModalSummary(productId) {
   availableWeights.forEach(({weight, price}) => {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
-      const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
+      const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons || 0) : 0;
       totalItems += qty;
       totalPrice += (price + addonsPrice) * qty;
     }
@@ -197,55 +202,48 @@ function updateModalSummary(productId) {
   document.getElementById('addToCartBtn').disabled = totalItems === 0;
 }
 
-// Обновление или создание элемента корзины
-// Обновление или создание элементов корзины (каждый хлеб — отдельный item для отдельной карточки)
-function updateCartItem(productId, weight, delta) {  // Изменено: теперь delta вместо quantity, чтобы добавлять/удалять по одному
+// Обновление корзины (каждый хлеб — отдельный item)
+function updateCartItem(productId, weight, delta) {
   const product = products[productId];
   const price = product.prices[weight] || 0;
   const hasAddons = addonsSelected[productId]?.[weight] || false;
   const addonsPrice = hasAddons ? parseInt(product.addons || 0) : 0;
-  const itemPrice = price + addonsPrice;  // Цена за одну единицу
+  const itemPrice = price + addonsPrice;
 
-  // Находим все существующие items для этого id, weight и hasAddons
+  // Находим все items для этого id, weight и hasAddons
   const matchingItems = cart.filter(item => item.id === productId && item.weight === weight && item.hasAddons === hasAddons);
 
   if (delta > 0) {
-    // Добавляем delta новых отдельных items
-    for (let i = 0; i < delta; i++) {
-      cart.push({
-        id: productId,
-        name: product.name,
-        weight: weight,
-        quantity: 1,  // Всегда 1 для отдельной карточки
-        price: itemPrice,
-        hasAddons: hasAddons,
-        total: itemPrice,  // Total за одну единицу
-        emoji: getBreadEmoji(product.name),
-        timestamp: Date.now() + Math.random()  // Уникальный timestamp для каждого (чтобы удалять по-отдельности)
-      });
-    }
+    // Добавляем ровно один item
+    cart.push({
+      id: productId,
+      name: product.name,
+      weight: weight,
+      quantity: 1,
+      price: itemPrice,
+      hasAddons: hasAddons,
+      total: itemPrice,
+      emoji: getBreadEmoji(product.name),
+      timestamp: Date.now() // Убрали Math.random(), используем точное время
+    });
   } else if (delta < 0 && matchingItems.length > 0) {
-    // Удаляем |delta| items (последние добавленные, например)
-    const removeCount = Math.min(Math.abs(delta), matchingItems.length);
-    for (let i = 0; i < removeCount; i++) {
-      const index = cart.findIndex(item => item.timestamp === matchingItems[matchingItems.length - 1 - i].timestamp);
-      if (index !== -1) cart.splice(index, 1);
-    }
+    // Удаляем один item
+    const index = cart.findIndex(item => item.id === productId && item.weight === weight && item.hasAddons === hasAddons);
+    if (index !== -1) cart.splice(index, 1);
   }
 
   saveCart();
   updateCartIndicator();
-  if (document.getElementById('cartGrid')) renderCart(); // Обновляем корзину на странице
-  updateModalSummary(productId);  // Если в модалке, обновляем сумму
+  if (document.getElementById('cartGrid')) renderCart();
 }
 
-// Добавление в корзину (теперь просто синхронизация)
+// Перейти в корзину
 function addToCart(productId) {
   showNotification('Переходим в корзину...', 'success');
   setTimeout(() => {
     closeProductModal();
     window.location.href = '/cart.html';
-  }, 1000); // Задержка 1 секунда для показа уведомления
+  }, 1000);
 }
 
 // Закрытие модального окна
@@ -291,7 +289,7 @@ function updateCartIndicator() {
 }
 
 function getTotalItems() {
-  return cart.reduce((sum, item) => sum + item.quantity, 0);
+  return cart.length;
 }
 
 function getTotalPrice() {
@@ -342,7 +340,7 @@ function openCart() {
   window.location.href = '/cart.html';
 }
 
-// Показ уведомления (исчезающее сообщение)
+// Показ уведомления
 function showNotification(message, type = 'info') {
   let notification = document.getElementById('notification');
   if (!notification) {
@@ -351,15 +349,8 @@ function showNotification(message, type = 'info') {
     document.body.appendChild(notification);
   }
 
-  // Устанавливаем класс в зависимости от type
   notification.classList.remove('success', 'error', 'info');
-  if (type === 'success') {
-    notification.classList.add('success');
-  } else if (type === 'error') {
-    notification.classList.add('error');
-  } else {
-    notification.classList.add('info');
-  }
+  notification.classList.add(type);
 
   notification.textContent = message;
   notification.style.opacity = '1';
@@ -383,8 +374,6 @@ document.addEventListener('click', function(e) {
 // Привязка события поиска
 document.getElementById('searchInput')?.addEventListener('input', handleSearch);
 
-
-
 // Рендеринг корзины на cart.html
 function renderCart() {
   const grid = document.getElementById('cartGrid');
@@ -404,7 +393,7 @@ function renderCart() {
           <div class="product-name">${item.name}</div>
           <div class="product-ingredients">${item.weight}г</div>
           <div class="product-meta">
-            <div class="meta-item">${item.total}₽</div> <!-- Убрал x${item.quantity}, т.к. всегда 1 -->
+            <div class="meta-item">${item.total}₽</div>
           </div>
         </div>
       </div>
@@ -415,7 +404,7 @@ function renderCart() {
           Добавки (+${products[item.id].addons}₽)
         </label>
       ` : ''}
-      <button class="remove-btn" onclick="removeCartItem('${item.timestamp}')">Удалить</button>
+      <button class="remove-btn" onclick="removeCartItem(${item.timestamp})">Удалить</button>
     </div>
   `).join('');
 
@@ -424,27 +413,40 @@ function renderCart() {
 
 // Удаление товара из корзины
 function removeCartItem(timestamp) {
-  const index = cart.findIndex(item => item.timestamp === parseInt(timestamp));
+  const index = cart.findIndex(item => item.timestamp === Number(timestamp));
   if (index !== -1) {
+    const removedItem = cart[index];
     cart.splice(index, 1);
     saveCart();
     renderCart();
     updateCartIndicator();
-    showNotification('Товар удалён из корзины', 'success');
+    showNotification(`Удалён ${removedItem.name} (${removedItem.weight}г)`, 'success');
+    // Если в модалке, обновляем
+    if (currentProduct && currentProduct === removedItem.id) {
+      quantities[currentProduct][removedItem.weight] = (quantities[currentProduct][removedItem.weight] || 1) - 1;
+      document.getElementById(`qty-${currentProduct}-${removedItem.weight}`).textContent = quantities[currentProduct][removedItem.weight];
+      updateModalSummary(currentProduct);
+    }
   }
 }
 
 // Переключение добавок в корзине
 function toggleCartAddon(timestamp, checked) {
-  const item = cart.find(item => item.timestamp === parseInt(timestamp));
+  const item = cart.find(item => item.timestamp === Number(timestamp));
   if (item && products[item.id]?.addons) {
     item.hasAddons = checked;
     const price = products[item.id].prices[item.weight] || 0;
-    const addonsPrice = checked ? parseInt(products[item.id].addons) || 0 : 0;
-    item.total = (price + addonsPrice) * item.quantity;
+    const addonsPrice = checked ? parseInt(products[item.id].addons || 0) : 0;
+    item.total = price + addonsPrice;
     saveCart();
     renderCart();
     updateCartIndicator();
+    showNotification(`${checked ? 'Добавлены' : 'Убраны'} добавки для ${item.name} (${item.weight}г)`, 'success');
+    // Если в модалке, обновляем
+    if (currentProduct && currentProduct === item.id) {
+      addonsSelected[item.id][item.weight] = checked;
+      updateModalSummary(item.id);
+    }
   }
 }
 
@@ -456,8 +458,7 @@ if (document.getElementById('cartGrid')) {
 // Загружаем каталог при старте на index.html
 if (document.getElementById('productGrid')) loadCatalog();
 
-
-// Добавьте в конец script.js
+// Очистка кэша
 function clearCache() {
   localStorage.removeItem('catalog');
   loadCatalog();

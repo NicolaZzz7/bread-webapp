@@ -28,10 +28,15 @@
             </div>
         </div>
 
-        <button class="add-to-cart-btn" id="checkoutBtn" onclick="openCart()">Оформить заказ</button>
+        <button class="add-to-cart-btn" id="checkoutBtn">📝 Оформить заказ</button>
         <button class="add-button" onclick="window.location.href = '/index.html'">Назад к каталогу</button>
     </div>
 
-    <script src="/script.js"></script>
+    <script src="/script.js">
+        document.getElementById('checkoutBtn').addEventListener('click', () => {
+    const data = { action: 'checkout', cart: cart, total: getTotalPrice(), totalItems: getTotalItems() };
+    Telegram.WebApp.sendData(JSON.stringify(data));
+  });
+    </script>
 </body>
 </html>
