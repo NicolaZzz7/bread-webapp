@@ -579,3 +579,132 @@ body {
 #notification.error {
   background: #e53e3e;
 }
+
+.product-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-header {
+  display: flex;
+  align-items: center;
+}
+
+.product-emoji {
+  font-size: 24px;
+  margin-right: 10px;
+}
+
+.product-info {
+  flex-grow: 1;
+}
+
+.product-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.product-ingredients {
+  font-size: 14px;
+  color: #718096;
+  margin-bottom: 5px;
+}
+
+.product-meta {
+  display: flex;
+  gap: 10px;
+}
+
+.meta-item {
+  font-size: 12px;
+  color: #718096;
+}
+
+.addons-checkbox {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.addons-checkbox input {
+  margin-right: 5px;
+}
+
+.checkmark {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+.addons-checkbox input:checked ~ .checkmark {
+  background: #48bb78;
+  border-color: #48bb78;
+}
+
+.addons-checkbox input:checked ~ .checkmark:after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  display: block;
+  line-height: 16px;
+}
+
+.remove-btn {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remove-btn:hover {
+  background: #c53030;
+}
+
+/* Стили для уведомления */
+#notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #48bb78;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 10000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#notification.error {
+  background: #e53e3e;
+}
+
+.add-button {
+  background: #4a5568;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.add-button:hover {
+  background: #2d3748;
+}

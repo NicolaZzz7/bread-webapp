@@ -27,7 +27,7 @@ async function loadCatalog() {
     updateCartIndicator();
   } catch (error) {
     console.error('Ошибка загрузки данных:', error);
-    document.getElementById('productGrid').innerHTML = getEmptyStateHTML('😕', 'Не удалось загрузить каталог', error.message);
+    document.getElementById('productGrid')?.innerHTML = getEmptyStateHTML('😕', 'Не удалось загрузить каталог', error.message);
   }
 }
 
@@ -190,7 +190,7 @@ function updateCartItem(productId, weight, quantity) {
   const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
   const itemTotal = (price + addonsPrice) * quantity;
 
-  const existingIndex = cart.findIndex(item => item.id === productId && item.weight === weight);
+  const existingIndex = cart.findIndex(item => item.id === productId && item.weight === weight && item.hasAddons === (addonsSelected[productId]?.[weight] || false));
   if (quantity === 0 && existingIndex !== -1) {
     cart.splice(existingIndex, 1); // Удаляем, если количество стало 0
   } else if (quantity > 0) {
@@ -213,9 +213,10 @@ function updateCartItem(productId, weight, quantity) {
   }
   saveCart();
   updateCartIndicator();
+  if (document.getElementById('cartGrid')) renderCart(); // Обновляем корзину на странице
 }
 
-// Добавление в корзину (теперь просто синхронизация)
+// Добавление в корзину
 function addToCart(productId) {
   const product = products[productId];
   const weights = getAvailableWeights(product);
@@ -375,5 +376,74 @@ document.addEventListener('click', function(e) {
 // Привязка события поиска
 document.getElementById('searchInput')?.addEventListener('input', handleSearch);
 
-// Загружаем каталог при старте
+// Рендеринг корзины на cart.html
+function renderCart() {
+  const grid = document.getElementById('cartGrid');
+  if (!grid) return;
+
+  if (cart.length === 0) {
+    grid.innerHTML = getEmptyStateHTML('🛒', 'Корзина пуста', 'Добавьте товары из каталога');
+    document.getElementById('cartTotal').textContent = '0₽';
+    return;
+  }
+
+  grid.innerHTML = cart.map(item => `
+    <div class="product-card" data-cart-id="${item.timestamp}">
+      <div class="product-header">
+        <div class="product-emoji">${item.emoji}</div>
+        <div class="product-info">
+          <div class="product-name">${item.name}</div>
+          <div class="product-ingredients">${item.weight}г</div>
+          <div class="product-meta">
+            <div class="meta-item">x${item.quantity}</div>
+            <div class="meta-item">${item.total}₽</div>
+          </div>
+        </div>
+      </div>
+      ${products[item.id]?.addons ? `
+        <label class="addons-checkbox" style="margin: 10px;">
+          <input type="checkbox" id="addon-${item.timestamp}" ${item.hasAddons ? 'checked' : ''} onchange="toggleCartAddon('${item.timestamp}', this.checked)">
+          <span class="checkmark"></span>
+          Добавки (+${products[item.id].addons}₽)
+        </label>
+      ` : ''}
+      <button class="remove-btn" onclick="removeCartItem('${item.timestamp}')">Удалить</button>
+    </div>
+  `).join('');
+
+  document.getElementById('cartTotal').textContent = `${getTotalPrice()}₽`;
+}
+
+// Удаление товара из корзины
+function removeCartItem(timestamp) {
+  const index = cart.findIndex(item => item.timestamp === parseInt(timestamp));
+  if (index !== -1) {
+    cart.splice(index, 1);
+    saveCart();
+    renderCart();
+    updateCartIndicator();
+    showNotification('Товар удалён из корзины', 'success');
+  }
+}
+
+// Переключение добавок в корзине
+function toggleCartAddon(timestamp, checked) {
+  const item = cart.find(item => item.timestamp === parseInt(timestamp));
+  if (item && products[item.id]?.addons) {
+    item.hasAddons = checked;
+    const price = products[item.id].prices[item.weight] || 0;
+    const addonsPrice = checked ? parseInt(products[item.id].addons) || 0 : 0;
+    item.total = (price + addonsPrice) * item.quantity;
+    saveCart();
+    renderCart();
+    updateCartIndicator();
+  }
+}
+
+// Загрузка корзины при старте на cart.html
+if (document.getElementById('cartGrid')) {
+  renderCart();
+}
+
+// Загружаем каталог при старте на index.html
 if (document.getElementById('productGrid')) loadCatalog();
