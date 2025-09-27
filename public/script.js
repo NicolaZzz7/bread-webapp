@@ -11,9 +11,18 @@ let addonsSelected = {};
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
 
-// Загрузка каталога
+// Загрузка каталога с кэшем
 async function loadCatalog() {
   console.log('Начало загрузки каталога');
+  const cachedData = localStorage.getItem('catalog');
+  if (cachedData) {
+    products = JSON.parse(cachedData);
+    console.log('Данные загружены из кэша');
+    renderProducts(products);
+    updateCartIndicator();
+    return;
+  }
+
   try {
     const response = await fetch('/api/catalog');
     console.log('Response status:', response.status);
@@ -23,6 +32,7 @@ async function loadCatalog() {
     const data = await response.json();
     console.log('Данные получены:', data);
     products = data;
+    localStorage.setItem('catalog', JSON.stringify(data)); // Кэшируем
     renderProducts(products);
     updateCartIndicator();
   } catch (error) {
@@ -71,6 +81,13 @@ function openProductModal(productId) {
 
   if (!quantities[productId]) quantities[productId] = {};
   if (!addonsSelected[productId]) addonsSelected[productId] = {};
+
+  // Загрузка актуального количества из корзины
+  availableWeights.forEach(({weight}) => {
+    const existingItem = cart.find(item => item.id === productId && item.weight === weight);
+    quantities[productId][weight] = existingItem ? existingItem.quantity : 0;
+    addonsSelected[productId][weight] = existingItem ? existingItem.hasAddons : false;
+  });
 
   const availableWeights = getAvailableWeights(product);
   const hasAddons = product.addons && product.addons !== '';
@@ -226,13 +243,31 @@ function addToCart(productId) {
   weights.forEach(({weight}) => {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
-      addedItems += qty;
       const price = product.prices[weight] || 0;
       const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
-      addedTotal += (price + addonsPrice) * qty;
+      const unitPrice = price + addonsPrice;
+
+      for (let i = 0; i < qty; i++) {
+        const cartItem = {
+          id: productId,
+          name: product.name,
+          weight: weight,
+          quantity: 1,
+          price: unitPrice,
+          hasAddons: addonsSelected[productId]?.[weight] || false,
+          total: unitPrice,
+          emoji: getBreadEmoji(product.name),
+          timestamp: Date.now() + i
+        };
+        cart.push(cartItem);
+        addedItems += 1;
+        addedTotal += unitPrice;
+      }
     }
   });
 
+  saveCart();
+  updateCartIndicator();
   closeProductModal();
   showNotification(`${addedItems} x ${product.name} добавлено в корзину за ${addedTotal}₽!`, 'success');
 }
@@ -447,3 +482,10 @@ if (document.getElementById('cartGrid')) {
 
 // Загружаем каталог при старте на index.html
 if (document.getElementById('productGrid')) loadCatalog();
+
+
+// Добавьте в конец script.js
+function clearCache() {
+  localStorage.removeItem('catalog');
+  loadCatalog();
+}
