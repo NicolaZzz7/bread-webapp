@@ -5,7 +5,6 @@ cart = cart.filter(item => item && item.name && item.name !== 'undefined'); // �
 let selectedWeights = {};
 let currentProduct = null;
 let quantities = {};
-let addonsSelected = {};
 
 // Инициализация Telegram Web App
 Telegram.WebApp.ready();
@@ -56,7 +55,7 @@ function createProductCard(productId, product) {
           <div class="product-ingredients">${product.ingredients || 'Состав не указан'}</div>
           <div class="product-meta">
             <div class="meta-item">⏰ ${product.prep_time || '1-2 дня'}</div>
-            ${product.addons ? `<div class="meta-item">✨ ${product.addons}</div>` : ''}
+            ${product.addons ? `<div class="meta-item">✨ Возможны добавки</div>` : ''}
           </div>
         </div>
       </div>
@@ -70,16 +69,13 @@ function openProductModal(productId) {
   const product = products[productId];
 
   if (!quantities[productId]) quantities[productId] = {};
-  if (!addonsSelected[productId]) addonsSelected[productId] = {};
 
   const availableWeights = getAvailableWeights(product);
-  const hasAddons = product.addons && product.addons !== '';
 
   // Загрузка актуального количества из корзины
   availableWeights.forEach(({weight}) => {
-    const matchingItems = cart.filter(item => item.id === productId && item.weight === weight && item.hasAddons === (addonsSelected[productId][weight] || false));
+    const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
     quantities[productId][weight] = matchingItems.length;
-    addonsSelected[productId][weight] = matchingItems.length > 0 ? matchingItems[0].hasAddons : false;
   });
 
   const modalHTML = `
@@ -101,7 +97,6 @@ function openProductModal(productId) {
         <div class="section-title">Выберите вес и количество:</div>
         ${availableWeights.map(({weight, price}) => {
           const currentQty = quantities[productId][weight] || 0;
-          const isSelected = addonsSelected[productId][weight] || false;
           return `
             <div class="weight-row">
               <div class="weight-info">
@@ -113,13 +108,6 @@ function openProductModal(productId) {
                 <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
                 <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">+</button>
               </div>
-              ${hasAddons ? `
-                <label class="addons-checkbox" style="margin-left: 10px;">
-                  <input type="checkbox" id="addon-${productId}-${weight}" ${isSelected ? 'checked' : ''} onchange="toggleAddons('${productId}', '${weight}', this.checked)">
-                  <span class="checkmark"></span>
-                  +${product.addons}₽
-                </label>
-              ` : ''}
             </div>
           `;
         }).join('')}
@@ -168,18 +156,6 @@ function changeWeightQuantity(productId, weight, delta) {
   updateModalSummary(productId);
 }
 
-// Переключение чекбокса добавок
-function toggleAddons(productId, weight, checked) {
-  if (!addonsSelected[productId]) addonsSelected[productId] = {};
-  addonsSelected[productId][weight] = checked;
-
-  // Удаляем все items для этого веса и пересоздаём
-  const currentQty = quantities[productId][weight] || 0;
-  cart = cart.filter(item => !(item.id === productId && item.weight === weight));
-  updateCartItem(productId, weight, currentQty);
-  updateModalSummary(productId);
-}
-
 // Обновление сводки в модальном окне
 function updateModalSummary(productId) {
   const product = products[productId];
@@ -191,9 +167,8 @@ function updateModalSummary(productId) {
   availableWeights.forEach(({weight, price}) => {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
-      const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons || 0) : 0;
       totalItems += qty;
-      totalPrice += (price + addonsPrice) * qty;
+      totalPrice += price * qty; // Добавки считаются в корзине
     }
   });
 
@@ -206,29 +181,26 @@ function updateModalSummary(productId) {
 function updateCartItem(productId, weight, delta) {
   const product = products[productId];
   const price = product.prices[weight] || 0;
-  const hasAddons = addonsSelected[productId]?.[weight] || false;
-  const addonsPrice = hasAddons ? parseInt(product.addons || 0) : 0;
-  const itemPrice = price + addonsPrice;
 
-  // Находим все items для этого id, weight и hasAddons
-  const matchingItems = cart.filter(item => item.id === productId && item.weight === weight && item.hasAddons === hasAddons);
+  // Находим все items для этого id и weight (без учёта hasAddons, так как добавки выбираются в корзине)
+  const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
 
   if (delta > 0) {
-    // Добавляем ровно один item
+    // Добавляем ровно один item без добавок по умолчанию
     cart.push({
       id: productId,
       name: product.name,
       weight: weight,
       quantity: 1,
-      price: itemPrice,
-      hasAddons: hasAddons,
-      total: itemPrice,
+      price: price,
+      hasAddons: false, // Добавки изначально отключены
+      total: price,
       emoji: getBreadEmoji(product.name),
-      timestamp: Date.now() // Убрали Math.random(), используем точное время
+      timestamp: Date.now()
     });
   } else if (delta < 0 && matchingItems.length > 0) {
-    // Удаляем один item
-    const index = cart.findIndex(item => item.id === productId && item.weight === weight && item.hasAddons === hasAddons);
+    // Удаляем один item (первый попавшийся)
+    const index = cart.findIndex(item => item.id === productId && item.weight === weight);
     if (index !== -1) cart.splice(index, 1);
   }
 
@@ -399,7 +371,7 @@ function renderCart() {
       </div>
       ${products[item.id]?.addons ? `
         <label class="addons-checkbox" style="margin: 10px;">
-          <input type="checkbox" id="addon-${item.timestamp}" ${item.hasAddons ? 'checked' : ''} onchange="toggleCartAddon('${item.timestamp}', this.checked)">
+          <input type="checkbox" id="addon-${item.timestamp}" ${item.hasAddons ? 'checked' : ''} onchange="toggleCartAddon(${item.timestamp}, this.checked)">
           <span class="checkmark"></span>
           Добавки (+${products[item.id].addons}₽)
         </label>
@@ -442,11 +414,6 @@ function toggleCartAddon(timestamp, checked) {
     renderCart();
     updateCartIndicator();
     showNotification(`${checked ? 'Добавлены' : 'Убраны'} добавки для ${item.name} (${item.weight}г)`, 'success');
-    // Если в модалке, обновляем
-    if (currentProduct && currentProduct === item.id) {
-      addonsSelected[item.id][item.weight] = checked;
-      updateModalSummary(item.id);
-    }
   }
 }
 
