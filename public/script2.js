@@ -11,9 +11,18 @@ let addonsSelected = {};
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
 
-// Загрузка каталога
+// Загрузка каталога с кэшем
 async function loadCatalog() {
   console.log('Начало загрузки каталога');
+  const cachedData = localStorage.getItem('catalog');
+  if (cachedData) {
+    products = JSON.parse(cachedData);
+    console.log('Данные загружены из кэша');
+    renderProducts(products);
+    updateCartIndicator();
+    return;
+  }
+
   try {
     const response = await fetch('/api/catalog');
     console.log('Response status:', response.status);
@@ -23,6 +32,7 @@ async function loadCatalog() {
     const data = await response.json();
     console.log('Данные получены:', data);
     products = data;
+    localStorage.setItem('catalog', JSON.stringify(data)); // Кэшируем
     renderProducts(products);
     updateCartIndicator();
   } catch (error) {
@@ -71,16 +81,18 @@ function openProductModal(productId) {
 
   if (!quantities[productId]) quantities[productId] = {};
   if (!addonsSelected[productId]) addonsSelected[productId] = {};
-
+  
   const availableWeights = getAvailableWeights(product);
   const hasAddons = product.addons && product.addons !== '';
-
+  
   // Загрузка актуального количества из корзины
   availableWeights.forEach(({weight}) => {
     const existingItem = cart.find(item => item.id === productId && item.weight === weight);
     quantities[productId][weight] = existingItem ? existingItem.quantity : 0;
     addonsSelected[productId][weight] = existingItem ? existingItem.hasAddons : false;
   });
+
+  
 
   const modalHTML = `
     <div class="modal-content">
@@ -135,7 +147,7 @@ function openProductModal(productId) {
         </div>
       </div>
       <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
-        🛒 Перейти в корзину
+        🛒 Добавить в корзину
       </button>
     </div>
   `;
@@ -158,13 +170,6 @@ function changeWeightQuantity(productId, weight, delta) {
   updateCartItem(productId, weight, newQty);
 
   updateModalSummary(productId);
-
-  // Уведомление
-  if (delta > 0) {
-    showNotification(`Добавлен 1 шт ${products[productId].name} (${weight}г)`, 'success');
-  } else if (delta < 0) {
-    showNotification(`Удалён 1 шт ${products[productId].name} (${weight}г)`, 'success');
-  }
 }
 
 // Переключение чекбокса добавок
@@ -186,7 +191,7 @@ function updateModalSummary(productId) {
   availableWeights.forEach(({weight, price}) => {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
-      const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
+      const addonsPrice = addonsSelected[productId][weight] ? parseInt(product.addons) || 0 : 0;
       totalItems += qty;
       totalPrice += (price + addonsPrice) * qty;
     }
@@ -230,10 +235,43 @@ function updateCartItem(productId, weight, quantity) {
   if (document.getElementById('cartGrid')) renderCart(); // Обновляем корзину на странице
 }
 
-// Добавление в корзину (теперь просто синхронизация)
+// Добавление в корзину
 function addToCart(productId) {
+  const product = products[productId];
+  const weights = getAvailableWeights(product);
+  let addedItems = 0;
+  let addedTotal = 0;
+
+  weights.forEach(({weight}) => {
+    const qty = quantities[productId][weight] || 0;
+    if (qty > 0) {
+      const price = product.prices[weight] || 0;
+      const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
+      const unitPrice = price + addonsPrice;
+
+      for (let i = 0; i < qty; i++) {
+        const cartItem = {
+          id: productId,
+          name: product.name,
+          weight: weight,
+          quantity: 1,
+          price: unitPrice,
+          hasAddons: addonsSelected[productId]?.[weight] || false,
+          total: unitPrice,
+          emoji: getBreadEmoji(product.name),
+          timestamp: Date.now() + i
+        };
+        cart.push(cartItem);
+        addedItems += 1;
+        addedTotal += unitPrice;
+      }
+    }
+  });
+
+  saveCart();
+  updateCartIndicator();
   closeProductModal();
-  showNotification(`${getTotalItems()} x ${products[productId].name} обновлено в корзине за ${getTotalPrice()}₽!`, 'success');
+  showNotification(`${addedItems} x ${product.name} добавлено в корзину за ${addedTotal}₽!`, 'success');
 }
 
 // Закрытие модального окна
@@ -374,8 +412,6 @@ document.addEventListener('click', function(e) {
 
 // Привязка события поиска
 document.getElementById('searchInput')?.addEventListener('input', handleSearch);
-
-
 
 // Рендеринг корзины на cart.html
 function renderCart() {
