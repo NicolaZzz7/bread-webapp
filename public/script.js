@@ -198,42 +198,54 @@ function updateModalSummary(productId) {
 }
 
 // Обновление или создание элемента корзины
-function updateCartItem(productId, weight, quantity) {
+// Обновление или создание элементов корзины (каждый хлеб — отдельный item для отдельной карточки)
+function updateCartItem(productId, weight, delta) {  // Изменено: теперь delta вместо quantity, чтобы добавлять/удалять по одному
   const product = products[productId];
   const price = product.prices[weight] || 0;
-  const addonsPrice = addonsSelected[productId]?.[weight] ? parseInt(product.addons) || 0 : 0;
-  const itemTotal = (price + addonsPrice) * quantity;
+  const hasAddons = addonsSelected[productId]?.[weight] || false;
+  const addonsPrice = hasAddons ? parseInt(product.addons || 0) : 0;
+  const itemPrice = price + addonsPrice;  // Цена за одну единицу
 
-  const existingIndex = cart.findIndex(item => item.id === productId && item.weight === weight && item.hasAddons === (addonsSelected[productId]?.[weight] || false));
-  if (quantity === 0 && existingIndex !== -1) {
-    cart.splice(existingIndex, 1); // Удаляем, если количество стало 0
-  } else if (quantity > 0) {
-    const cartItem = {
-      id: productId,
-      name: product.name,
-      weight: weight,
-      quantity: quantity,
-      price: itemTotal,
-      hasAddons: addonsSelected[productId]?.[weight] || false,
-      total: itemTotal,
-      emoji: getBreadEmoji(product.name),
-      timestamp: Date.now()
-    };
-    if (existingIndex !== -1) {
-      cart[existingIndex] = cartItem; // Обновляем
-    } else {
-      cart.push(cartItem); // Добавляем новый
+  // Находим все существующие items для этого id, weight и hasAddons
+  const matchingItems = cart.filter(item => item.id === productId && item.weight === weight && item.hasAddons === hasAddons);
+
+  if (delta > 0) {
+    // Добавляем delta новых отдельных items
+    for (let i = 0; i < delta; i++) {
+      cart.push({
+        id: productId,
+        name: product.name,
+        weight: weight,
+        quantity: 1,  // Всегда 1 для отдельной карточки
+        price: itemPrice,
+        hasAddons: hasAddons,
+        total: itemPrice,  // Total за одну единицу
+        emoji: getBreadEmoji(product.name),
+        timestamp: Date.now() + Math.random()  // Уникальный timestamp для каждого (чтобы удалять по-отдельности)
+      });
+    }
+  } else if (delta < 0 && matchingItems.length > 0) {
+    // Удаляем |delta| items (последние добавленные, например)
+    const removeCount = Math.min(Math.abs(delta), matchingItems.length);
+    for (let i = 0; i < removeCount; i++) {
+      const index = cart.findIndex(item => item.timestamp === matchingItems[matchingItems.length - 1 - i].timestamp);
+      if (index !== -1) cart.splice(index, 1);
     }
   }
+
   saveCart();
   updateCartIndicator();
   if (document.getElementById('cartGrid')) renderCart(); // Обновляем корзину на странице
+  updateModalSummary(productId);  // Если в модалке, обновляем сумму
 }
 
 // Добавление в корзину (теперь просто синхронизация)
 function addToCart(productId) {
-  closeProductModal();
-  showNotification(`${getTotalItems()} x ${products[productId].name} обновлено в корзине за ${getTotalPrice()}₽!`, 'success');
+  showNotification('Переходим в корзину...', 'success');
+  setTimeout(() => {
+    closeProductModal();
+    window.location.href = '/cart.html';
+  }, 1000); // Задержка 1 секунда для показа уведомления
 }
 
 // Закрытие модального окна
@@ -336,21 +348,17 @@ function showNotification(message, type = 'info') {
   if (!notification) {
     notification = document.createElement('div');
     notification.id = 'notification';
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: ${type === 'success' ? '#48bb78' : '#e53e3e'};
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      z-index: 10000;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    `;
     document.body.appendChild(notification);
+  }
+
+  // Устанавливаем класс в зависимости от type
+  notification.classList.remove('success', 'error', 'info');
+  if (type === 'success') {
+    notification.classList.add('success');
+  } else if (type === 'error') {
+    notification.classList.add('error');
+  } else {
+    notification.classList.add('info');
   }
 
   notification.textContent = message;
@@ -361,7 +369,7 @@ function showNotification(message, type = 'info') {
     setTimeout(() => {
       if (notification.parentNode) notification.parentNode.removeChild(notification);
     }, 300);
-  }, 3000); // Уведомление исчезает через 3 секунды
+  }, 3000);
 }
 
 // Закрытие модального окна при клике вне его
@@ -396,8 +404,7 @@ function renderCart() {
           <div class="product-name">${item.name}</div>
           <div class="product-ingredients">${item.weight}г</div>
           <div class="product-meta">
-            <div class="meta-item">x${item.quantity}</div>
-            <div class="meta-item">${item.total}₽</div>
+            <div class="meta-item">${item.total}₽</div> <!-- Убрал x${item.quantity}, т.к. всегда 1 -->
           </div>
         </div>
       </div>

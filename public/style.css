@@ -519,12 +519,12 @@ body {
 }
 
 /* Стили для уведомления */
+/* Стили для уведомления */
 #notification {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: #48bb78;
   color: white;
   padding: 10px 20px;
   border-radius: 5px;
@@ -534,8 +534,16 @@ body {
   transition: opacity 0.3s ease;
 }
 
+#notification.success {
+  background: #48bb78; /* Зелёный для success */
+}
+
 #notification.error {
-  background: #e53e3e;
+  background: #e53e3e; /* Красный для error */
+}
+
+#notification.info {
+  background: #4a5568; /* Серый для info, или подберите свой */
 }
 
 .addons-checkbox {
@@ -585,25 +593,7 @@ body {
   background: #c53030;
 }
 
-/* Стили для уведомления */
-#notification {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #48bb78;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 5px;
-  z-index: 10000;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
 
-#notification.error {
-  background: #e53e3e;
-}
 
 .add-button {
   background: #4a5568;
