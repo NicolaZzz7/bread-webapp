@@ -46,6 +46,7 @@ function renderProducts(productsToRender) {
 
 // Создание карточки товара
 function createProductCard(productId, product) {
+  const quantityInCart = cart.filter(item => item.id === productId).length; // Считаем общее количество булок
   return `
     <div class="product-card" data-product-id="${productId}" onclick="openProductModal('${productId}')">
       <div class="product-header">
@@ -59,6 +60,11 @@ function createProductCard(productId, product) {
           </div>
         </div>
       </div>
+      ${quantityInCart > 0 ? `
+        <div class="product-quantity-indicator">
+          <span class="product-quantity-count">${quantityInCart}</span>
+        </div>
+      ` : ''}
     </div>
   `;
 }
@@ -154,6 +160,7 @@ function changeWeightQuantity(productId, weight, delta) {
   }
 
   updateModalSummary(productId);
+  renderProducts(products); // Обновляем каталог для индикаторов
 }
 
 // Обновление сводки в модальном окне
@@ -168,7 +175,7 @@ function updateModalSummary(productId) {
     const qty = quantities[productId][weight] || 0;
     if (qty > 0) {
       totalItems += qty;
-      totalPrice += price * qty; // Добавки считаются в корзине
+      totalPrice += price * qty;
     }
   });
 
@@ -182,24 +189,24 @@ function updateCartItem(productId, weight, delta) {
   const product = products[productId];
   const price = product.prices[weight] || 0;
 
-  // Находим все items для этого id и weight (без учёта hasAddons, так как добавки выбираются в корзине)
+  // Находим все items для этого id и weight
   const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
 
   if (delta > 0) {
-    // Добавляем ровно один item без добавок по умолчанию
+    // Добавляем ровно один item
     cart.push({
       id: productId,
       name: product.name,
       weight: weight,
       quantity: 1,
       price: price,
-      hasAddons: false, // Добавки изначально отключены
+      hasAddons: false,
       total: price,
       emoji: getBreadEmoji(product.name),
       timestamp: Date.now()
     });
   } else if (delta < 0 && matchingItems.length > 0) {
-    // Удаляем один item (первый попавшийся)
+    // Удаляем один item
     const index = cart.findIndex(item => item.id === productId && item.weight === weight);
     if (index !== -1) cart.splice(index, 1);
   }
@@ -369,7 +376,7 @@ function renderCart() {
           </div>
         </div>
       </div>
-      ${products[item.id]?.addons ? `
+      ${products[item.id]?.addons && parseInt(products[item.id].addons) > 0 ? `
         <label class="addons-checkbox" style="margin: 10px;">
           <input type="checkbox" id="addon-${item.timestamp}" ${item.hasAddons ? 'checked' : ''} onchange="toggleCartAddon(${item.timestamp}, this.checked)">
           <span class="checkmark"></span>
@@ -399,6 +406,7 @@ function removeCartItem(timestamp) {
       document.getElementById(`qty-${currentProduct}-${removedItem.weight}`).textContent = quantities[currentProduct][removedItem.weight];
       updateModalSummary(currentProduct);
     }
+    renderProducts(products); // Обновляем каталог для индикаторов
   }
 }
 
