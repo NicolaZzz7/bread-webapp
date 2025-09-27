@@ -27,7 +27,7 @@ async function loadCatalog() {
     updateCartIndicator();
   } catch (error) {
     console.error('Ошибка загрузки данных:', error);
-    document.getElementById('productGrid')?.innerHTML = getEmptyStateHTML('😕', 'Не удалось загрузить каталог', error.message);
+    document.getElementById('productGrid').innerHTML = getEmptyStateHTML('😕', 'Не удалось загрузить каталог', error.message);
   }
 }
 
