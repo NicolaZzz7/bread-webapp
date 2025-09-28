@@ -125,11 +125,9 @@ function openProductModal(productId) {
           <span id="modalTotal">0₽</span>
         </div>
       </div>
-      ${cart.length > 0 ? `
-        <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
-          🛒 Перейти в корзину
-        </button>
-      ` : ''}
+      <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
+        🛒 Перейти в корзину
+      </button>
     </div>
   `;
 
