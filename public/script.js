@@ -81,9 +81,12 @@ function openProductModal(productId) {
     quantities[productId][weight] = matchingItems.length;
   });
 
-  // Преобразуем ингредиенты в список
+  // Преобразуем ингредиенты в список с капитализацией
   const ingredientsList = product.ingredients && product.ingredients !== 'Не указан'
-    ? product.ingredients.split(',').map(item => `<li>${item.trim()}</li>`).join('')
+    ? product.ingredients.split(',').map(item => {
+        const trimmed = item.trim();
+        return `<li>${trimmed.charAt(0).toUpperCase() + trimmed.slice(1)}</li>`;
+      }).join('')
     : '<li>Не указан</li>';
 
   const modalHTML = `
@@ -96,7 +99,7 @@ function openProductModal(productId) {
         <div class="modal-left">
           <div class="modal-emoji">${getBreadEmoji(product.name)}</div>
           <div class="detail-item prep-time">
-            <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
+            <span class="detail-label">Срок изготовления:</span><br>${product.prep_time || '1-2 дня'}
           </div>
         </div>
         <div class="modal-right">
@@ -329,29 +332,27 @@ function openCart() {
 function showNotification(message, type = 'info') {
   let notification = document.getElementById('notification');
   if (notification) {
-    notification.remove(); // Удаляем старое уведомление, если оно есть
+    notification.remove();
   }
 
   notification = document.createElement('div');
   notification.id = 'notification';
-  notification.className = 'notification'; // Добавляем базовый класс
-  notification.classList.add(type); // Добавляем тип (success, error, info)
+  notification.className = 'notification';
+  notification.classList.add(type);
   notification.textContent = message;
   document.body.appendChild(notification);
 
-  // Показываем уведомление
   setTimeout(() => {
     notification.classList.add('visible');
-  }, 10); // Небольшая задержка для анимации
+  }, 10);
 
-  // Скрываем и удаляем через 3 секунды
   setTimeout(() => {
     notification.classList.remove('visible');
     setTimeout(() => {
       if (notification.parentNode) {
         notification.parentNode.removeChild(notification);
       }
-    }, 300); // Ждем завершения анимации
+    }, 300);
   }, 3000);
 }
 
