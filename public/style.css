@@ -1,6 +1,3 @@
-/* Подключение Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
-
 /* ===== RESET & VARIABLES ===== */
 * {
     margin: 0;
@@ -51,9 +48,7 @@ body {
 }
 
 .header h1 {
-    font-family: 'Dancing Script', cursive;
-    font-size: 32px; /* Увеличим размер для большей выразительности */
-    font-weight: 700;
+    font-size: 28px;
     margin-bottom: 8px;
 }
 
@@ -121,9 +116,8 @@ body {
 }
 
 .product-name {
-    font-family: 'Dancing Script', cursive;
-    font-size: 20px; /* Чуть больше для акцента */
-    font-weight: 700;
+    font-size: 18px;
+    font-weight: 600;
     margin-bottom: 4px;
 }
 
@@ -224,9 +218,8 @@ body {
 }
 
 .modal-title {
-    font-family: 'Dancing Script', cursive;
-    font-size: 24px; /* Увеличим для выразительности */
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .close-modal {
@@ -540,7 +533,7 @@ body {
     }
 
     .header h1 {
-        font-size: 28px; /* Уменьшим размер для мобильных */
+        font-size: 24px;
     }
 
     .product-card {
