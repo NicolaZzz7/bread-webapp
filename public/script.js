@@ -131,19 +131,21 @@ function openProductModal(productId) {
         </div>
       </div>
       <div class="modal-summary">
-        <div class="summary-item">
-          <span>${product.name}:</span>
-          <span id="totalItems">0 шт</span>
+          <div class="summary-item">
+            <span>${product.name}:</span>
+            <span id="totalItems">0 шт</span>
+          </div>
+          <div class="summary-totals">
+            <div class="summary-item total">
+              <span>Итого:</span>
+              <span id="modalTotal">0₽</span>
+            </div>
+            <div class="summary-item total-cart">
+              <span>Итого в корзине:</span>
+              <span id="cartTotal">0₽</span>
+            </div>
+          </div>
         </div>
-        <div class="summary-item total">
-          <span>Итого:</span>
-          <span id="modalTotal">0₽</span>
-        </div>
-        <div class="summary-item total-cart">
-          <span>Итого в корзине:</span>
-          <span id="cartTotal">0₽</span>
-        </div>
-      </div>
       <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
         🛒 Перейти в корзину
       </button>
