@@ -209,6 +209,7 @@ body {
     position: relative;
     text-align: center;
     margin-bottom: 20px;
+    padding-top: 10px; /* Опускаем название вниз */
 }
 
 .modal-title {
@@ -218,7 +219,7 @@ body {
 
 .close-modal {
     position: absolute;
-    top: 0;
+    top: -5px; /* Приподнимаем крестик вверх */
     right: 0;
     background: none;
     border: none;
@@ -229,18 +230,30 @@ body {
 
 .modal-info {
     display: flex;
-    align-items: flex-start;
+    align-items: stretch; /* Выравниваем нижние границы */
     margin-bottom: 20px;
+}
+
+.modal-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .modal-emoji {
     font-size: 48px;
-    margin-right: 16px;
-    flex-shrink: 0;
+    margin-bottom: 16px;
 }
 
-.modal-details {
+.prep-time {
+    font-size: 14px;
+}
+
+.modal-right {
     flex: 1;
+    text-align: right; /* Выравнивание состава по правому краю */
+    margin-left: auto; /* Максимальный сдвиг вправо */
 }
 
 .detail-item {
@@ -277,7 +290,7 @@ body {
 .weight-row {
     flex: 1;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column; /* Вертикальное размещение */
     align-items: center;
     padding: 12px;
     background: var(--bg-color);
@@ -288,8 +301,9 @@ body {
 
 .weight-info {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    justify-content: center; /* Вес и цена в одной строке по центру */
+    gap: 8px;
+    margin-bottom: 8px; /* Отступ перед контролами количества */
 }
 
 .weight-label {

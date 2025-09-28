@@ -93,14 +93,16 @@ function openProductModal(productId) {
         <button class="close-modal" onclick="closeProductModal()">×</button>
       </div>
       <div class="modal-info">
-        <div class="modal-emoji">${getBreadEmoji(product.name)}</div>
-        <div class="modal-details">
+        <div class="modal-left">
+          <div class="modal-emoji">${getBreadEmoji(product.name)}</div>
+          <div class="detail-item prep-time">
+            <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
+          </div>
+        </div>
+        <div class="modal-right">
           <div class="detail-item">
             <span class="detail-label">Состав:</span>
             <ul class="ingredients-list">${ingredientsList}</ul>
-          </div>
-          <div class="detail-item">
-            <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
           </div>
         </div>
       </div>
