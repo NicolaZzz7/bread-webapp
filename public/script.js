@@ -91,24 +91,22 @@ function openProductModal(productId) {
 
   const modalHTML = `
     <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title">${product.name}</div>
-        <button class="close-modal" onclick="closeProductModal()">×</button>
+    <div class="modal-header">
+      <div class="modal-title">${product.name}</div>
+      <button class="close-modal" onclick="closeProductModal()">×</button>
+    </div>
+    <div class="modal-image-slider">
+      <div class="slide active">
+        <img src="${product.image || '/placeholder.jpg'}" alt="${product.name}">
       </div>
-      <div class="modal-info">
-        <div class="modal-left">
-          <div class="modal-emoji">${getBreadEmoji(product.name)}</div>
-          <div class="detail-item prep-time">
-            <span class="detail-label">Срок изготовления:</span><br>${product.prep_time || '1-2 дня'}
-          </div>
-        </div>
-        <div class="modal-right">
-          <div class="detail-item">
-            <span class="detail-label">Состав:</span>
-            <ul class="ingredients-list">${ingredientsList}</ul>
-          </div>
-        </div>
-      </div>
+      <!-- потом можно добавить несколько <div class="slide"><img ...></div> -->
+    </div>
+    <div class="detail-item prep-time">
+      <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
+    </div>
+    <div class="detail-item ingredients">
+      <span class="detail-label">Состав:</span> ${product.ingredients || 'Не указан'}
+    </div>
       <div class="weight-section">
         <div class="section-title">Выберите вес и количество:</div>
         <div class="weight-row-container">
@@ -151,7 +149,15 @@ function openProductModal(productId) {
       </button>
     </div>
   `;
-
+const slides = document.querySelectorAll('.modal-image-slider .slide');
+let currentSlide = 0;
+if (slides.length > 1) {
+  setInterval(() => {
+    slides[currentSlide].classList.remove('active');
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add('active');
+  }, 3000);
+}
   document.getElementById('productModal').innerHTML = modalHTML;
   document.getElementById('productModal').style.display = 'block';
   updateModalSummary(productId);

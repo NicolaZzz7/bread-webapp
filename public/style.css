@@ -296,6 +296,36 @@ body {
     text-align: center;
 }
 
+.modal-image-slider {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.3); /* виньетка */
+}
+
+.modal-image-slider img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.modal-image-slider .slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.modal-image-slider .slide.active {
+  opacity: 1;
+}
+
+
 .weight-row-container {
     display: flex;
     gap: 16px;
