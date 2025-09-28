@@ -150,18 +150,20 @@ function openProductModal(productId) {
       </button>
     </div>
   `;
-const slides = document.querySelectorAll('.modal-image-slider .slide');
-let currentSlide = 0;
-if (slides.length > 1) {
-  setInterval(() => {
-    slides[currentSlide].classList.remove('active');
-    currentSlide = (currentSlide + 1) % slides.length;
-    slides[currentSlide].classList.add('active');
-  }, 3000);
-}
+
   document.getElementById('productModal').innerHTML = modalHTML;
   document.getElementById('productModal').style.display = 'block';
   updateModalSummary(productId);
+
+  const slides = document.querySelectorAll('.modal-image-slider .slide');
+    let currentSlide = 0;
+    if (slides.length > 1) {
+      setInterval(() => {
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }, 3000);
+    }
 }
 
 function changeWeightQuantity(productId, weight, delta) {
