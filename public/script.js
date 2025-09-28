@@ -96,10 +96,11 @@ function openProductModal(productId) {
       <button class="close-modal" onclick="closeProductModal()">×</button>
     </div>
     <div class="modal-image-slider">
-      <div class="slide active">
-        <img src="${product.image || '/placeholder.jpg'}" alt="${product.name}">
-      </div>
-      <!-- потом можно добавить несколько <div class="slide"><img ...></div> -->
+      ${(product.images || ['/placeholder.jpg']).map((src, i) => `
+        <div class="slide ${i === 0 ? 'active' : ''}">
+          <img src="${src}" alt="${product.name}">
+        </div>
+      `).join('')}
     </div>
     <div class="detail-item prep-time">
       <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}

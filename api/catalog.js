@@ -45,6 +45,11 @@ export default async (req, res) => {
         },
         addons: addons || '',
         prep_time: prep_time || '',
+          images: [
+            `/png/${breadId}/001.png`,
+            `/png/${breadId}/002.png`,
+            `/png/${breadId}/003.png`,
+          ]
       };
     }
 
