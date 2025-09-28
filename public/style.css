@@ -266,18 +266,25 @@ body {
 }
 
 .ingredients-list {
-    list-style-position: inside;
-    direction: rtl; /* маркеры вправо */
-    text-align: right; /* текст тоже к правому краю */
+    list-style: none;         /* убираем стандартные точки */
+    padding: 0;
+    margin: 0;
+    text-align: right;
     font-size: 14px;
     color: var(--text-color);
 }
 
 .ingredients-list li {
-    direction: ltr; /* текст читается нормально */
-    text-align: right; /* а выравнивается вправо */
+    position: relative;
+    padding-right: 14px;      /* место под точку справа */
 }
 
+.ingredients-list li::after {
+    content: "•";             /* сама точка */
+    position: absolute;
+    right: 0;
+    color: var(--text-color);
+}
 
 .weight-section {
     margin: 20px 0;
@@ -401,8 +408,8 @@ body {
     padding: 16px;
     margin: 20px 0;
     display: flex;
-    flex-direction: row;   /* теперь в одну строку */
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .summary-item {
@@ -412,6 +419,11 @@ body {
     font-size: 14px;
 }
 
+.summary-totals {
+    display: flex;
+    gap: 12px; /* расстояние между карточками */
+}
+
 .summary-item.total,
 .summary-item.total-cart {
     font-weight: 600;
@@ -419,13 +431,7 @@ body {
     color: var(--primary);
     border-top: 1px solid var(--border-color);
     margin-top: 8px;
-    display: inline-flex;
     flex: 1;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0;
-    border-top: none;
-    padding-top: 0;
 }
 
 .add-to-cart-btn {
