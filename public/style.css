@@ -267,15 +267,17 @@ body {
 
 .ingredients-list {
     list-style-position: inside;
-    direction: rtl; /* переносим маркеры вправо */
-    text-align: left;
+    direction: rtl; /* маркеры вправо */
+    text-align: right; /* текст тоже к правому краю */
     font-size: 14px;
     color: var(--text-color);
 }
 
 .ingredients-list li {
-  direction: ltr; /* возвращаем текст в нормальное направление */
+    direction: ltr; /* текст читается нормально */
+    text-align: right; /* а выравнивается вправо */
 }
+
 
 .weight-section {
     margin: 20px 0;
@@ -399,8 +401,8 @@ body {
     padding: 16px;
     margin: 20px 0;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    flex-direction: row;   /* теперь в одну строку */
+    justify-content: space-between;
 }
 
 .summary-item {
@@ -416,11 +418,14 @@ body {
     font-size: 16px;
     color: var(--primary);
     border-top: 1px solid var(--border-color);
-    padding-top: 8px;
     margin-top: 8px;
-    display: flex;
+    display: inline-flex;
+    flex: 1;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 0;
+    border-top: none;
+    padding-top: 0;
 }
 
 .add-to-cart-btn {
