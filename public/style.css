@@ -266,10 +266,15 @@ body {
 }
 
 .ingredients-list {
-    list-style-type: disc;
-    margin-left: 20px;
+    list-style-position: inside;
+    direction: rtl; /* переносим маркеры вправо */
+    text-align: left;
     font-size: 14px;
     color: var(--text-color);
+}
+
+.ingredients-list li {
+  direction: ltr; /* возвращаем текст в нормальное направление */
 }
 
 .weight-section {
@@ -279,6 +284,7 @@ body {
 .section-title {
     font-weight: 600;
     margin-bottom: 12px;
+    text-align: center;
 }
 
 .weight-row-container {
@@ -296,7 +302,7 @@ body {
     background: var(--bg-color);
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    min-width: 150px;
+    min-width: 120px;
 }
 
 .weight-info {
@@ -307,7 +313,8 @@ body {
 }
 
 .weight-label {
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 600
 }
 
 .weight-price {
@@ -319,7 +326,7 @@ body {
 .quantity-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 6px;
 }
 
 .quantity-btn {
@@ -391,6 +398,9 @@ body {
     border-radius: 12px;
     padding: 16px;
     margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .summary-item {
@@ -408,6 +418,9 @@ body {
     border-top: 1px solid var(--border-color);
     padding-top: 8px;
     margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .add-to-cart-btn {
