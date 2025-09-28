@@ -81,48 +81,62 @@ function openProductModal(productId) {
     quantities[productId][weight] = matchingItems.length;
   });
 
+  // Преобразуем ингредиенты в список
+  const ingredientsList = product.ingredients && product.ingredients !== 'Не указан'
+    ? product.ingredients.split(',').map(item => `<li>${item.trim()}</li>`).join('')
+    : '<li>Не указан</li>';
+
   const modalHTML = `
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title">${product.name}</div>
         <button class="close-modal" onclick="closeProductModal()">×</button>
       </div>
-      <div class="modal-emoji">${getBreadEmoji(product.name)}</div>
-      <div class="modal-details">
-        <div class="detail-item">
-          <span class="detail-label">Состав:</span> ${product.ingredients || 'Не указан'}
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
+      <div class="modal-info">
+        <div class="modal-emoji">${getBreadEmoji(product.name)}</div>
+        <div class="modal-details">
+          <div class="detail-item">
+            <span class="detail-label">Состав:</span>
+            <ul class="ingredients-list">${ingredientsList}</ul>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
+          </div>
         </div>
       </div>
       <div class="weight-section">
         <div class="section-title">Выберите вес и количество:</div>
-        ${availableWeights.map(({weight, price}) => {
-          const currentQty = quantities[productId][weight] || 0;
-          return `
-            <div class="weight-row">
-              <div class="weight-info">
-                <span class="weight-label">${weight}г</span>
-                <span class="weight-price">${price}₽</span>
+        <div class="weight-row-container">
+          ${availableWeights.map(({weight, price}) => {
+            const currentQty = quantities[productId][weight] || 0;
+            return `
+              <div class="weight-row">
+                <div class="weight-info">
+                  <span class="weight-label">${weight}г</span>
+                  <span class="weight-price">${price}₽</span>
+                </div>
+                <div class="quantity-controls">
+                  <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">-</button>
+                  <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                  <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">+</button>
+                </div>
               </div>
-              <div class="quantity-controls">
-                <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">-</button>
-                <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">+</button>
-              </div>
-            </div>
-          `;
-        }).join('')}
+            `;
+          }).join('')}
+        </div>
       </div>
       <div class="modal-summary">
         <div class="summary-item">
-          <span>Товаров:</span>
+          <span>${product.name}:</span>
           <span id="totalItems">0 шт</span>
         </div>
         <div class="summary-item total">
           <span>Итого:</span>
           <span id="modalTotal">0₽</span>
+        </div>
+        <div class="summary-item total-cart">
+          <span>Итого в корзине:</span>
+          <span id="cartTotal">0₽</span>
         </div>
       </div>
       <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
@@ -172,6 +186,7 @@ function updateModalSummary(productId) {
 
   document.getElementById('totalItems').textContent = `${totalItems} шт`;
   document.getElementById('modalTotal').textContent = `${totalPrice}₽`;
+  document.getElementById('cartTotal').textContent = `${getTotalPrice()}₽`;
   const addToCartBtn = document.getElementById('addToCartBtn');
   if (addToCartBtn) {
     addToCartBtn.style.display = cart.length > 0 ? 'block' : 'none';
