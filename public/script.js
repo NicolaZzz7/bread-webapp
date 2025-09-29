@@ -97,12 +97,12 @@ function createProductCard(productId, product) {
 
       <div class="transition-container">
         ${ (totalQtyForProduct === 0 && !visibleWeightControls[productId]) ? `
-          <button class="add-to-cart-btn fade-scale-enter-active"
+          <button class="add-to-cart-btn"
             onclick="(function(e){ e.stopPropagation(); showWeightControls('${productId}'); })(event)">
             ➕ Добавить в корзину
           </button>
         ` : `
-          <div class="weight-row-container fade-scale-enter-active" onclick="event.stopPropagation()">
+          <div class="weight-row-container" onclick="event.stopPropagation()">
             ${availableWeights.map(({ weight, price }) => {
               const currentQty = quantities[productId][weight] || 0;
               return `

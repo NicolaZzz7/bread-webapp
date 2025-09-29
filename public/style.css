@@ -347,30 +347,34 @@ body {
 
 
 .weight-row-container {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    min-height: 56px; /* ровно как у кнопки */
-    align-items: stretch; /* растягиваем */
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  padding: 0 8px;       /* внутренние отступы контейнера */
+  box-sizing: border-box;
+  background: transparent; /* фон дает .product-card, а не внутренние элементы */
 }
 
 .weight-row {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 8px;
-    border-radius: 12px;
-    border: 2px solid var(--border-color);
-    background: var(--bg-color);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 12px;
+  border-radius: 0;     /* обрезается общим container */
+  border: none;         /* убираем отдельный border (чтобы не отличалось от кнопки) */
+  background: transparent;
+  box-sizing: border-box;
 }
 
 .weight-info {
     display: flex;
     justify-content: center; /* Вес и цена в одной строке по центру */
     gap: 8px;
-    margin-bottom: 8px; /* Отступ перед контролами количества */
 }
 
 .weight-label {
@@ -392,17 +396,17 @@ body {
 
 .quantity-btn {
     width: 32px;
-    height: 32px;
-    border: 2px solid var(--primary);
-    background: none;
-    color: var(--primary);
-    border-radius: 50%;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  height: 32px;
+  border: 2px solid var(--primary);
+  background: none;
+  color: var(--primary);
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .quantity-value {
@@ -414,19 +418,33 @@ body {
 
 /* Общий контейнер для плавного перехода */
 .transition-container {
-  overflow: hidden;
-  transition: all 0.3s ease;
+  width: 100%;
+  min-height: 56px;           /* ровно как кнопка */
+  border-radius: 12px;        /* общее скругление */
+  overflow: hidden;           /* чтобы дети обрезались по скруглению */
+  display: block;
+  box-sizing: border-box;
 }
 
 .transition-container > * {
+  width: 100%;
+  height: 56px;               /* унифицируем высоту */
   opacity: 0;
-  transform: scale(0.95);
-  transition: all 0.3s ease;
+  transform: translateY(6px) scale(0.98);
+  transition: opacity .28s ease, transform .28s ease;
+  display: block;
+  box-sizing: border-box;
 }
 
 .transition-container > *.visible {
   opacity: 1;
   transform: scale(1);
+}
+
+/* when visible */
+.transition-container > *.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 /* Скрытие/появление с плавным масштабом и прозрачностью */
@@ -528,19 +546,19 @@ body {
 }
 
 .add-to-cart-btn {
-    width: 100%;
-  height: 56px; /* фиксированная высота */
+  width: 100%;
+  height: 100%;
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 0;       /* обрезается родителем */
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .add-to-cart-btn:hover {
