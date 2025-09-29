@@ -45,28 +45,54 @@ function renderProducts(productsToRender) {
 }
 
 function createProductCard(productId, product) {
-  const quantityInCart = cart.filter(item => item.id === productId).length;
+  if (!quantities[productId]) quantities[productId] = {};
+
+  const availableWeights = getAvailableWeights(product);
+
+  // Считаем количество по каждому весу в корзине
+  availableWeights.forEach(({ weight }) => {
+    const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
+    quantities[productId][weight] = matchingItems.length;
+  });
+
   return `
-    <div class="product-card" data-product-id="${productId}" onclick="openProductModal('${productId}')">
-      <div class="product-header">
-        <div class="product-emoji">${getBreadEmoji(product.name)}</div>
-        <div class="product-info">
-          <div class="product-name">${product.name}</div>
-          <div class="product-ingredients">${product.ingredients || 'Состав не указан'}</div>
-          <div class="product-meta">
-            <div class="meta-item">⏰ ${product.prep_time || '1-2 дня'}</div>
-            ${product.addons ? `<div class="meta-item">✨ Возможны добавки</div>` : ''}
-          </div>
+    <div class="product-card" data-product-id="${productId}">
+      <div class="product-image" onclick="openProductModal('${productId}')">
+        <img src="${(product.images && product.images[0]) || '/placeholder.jpg'}" alt="${product.name}">
+      </div>
+      <div class="product-info">
+        <div class="product-name" onclick="openProductModal('${productId}')">
+          ${product.name}
+        </div>
+        <div class="product-ingredients">${product.ingredients || 'Состав не указан'}</div>
+        <div class="product-meta">
+          <div class="meta-item">⏰ ${product.prep_time || '1-2 дня'}</div>
+          ${product.addons ? `<div class="meta-item">✨ Возможны добавки</div>` : ''}
         </div>
       </div>
-      ${quantityInCart > 0 ? `
-        <div class="product-quantity-indicator">
-          <span class="product-quantity-count">${quantityInCart}</span>
-        </div>
-      ` : ''}
+
+      <div class="weight-row-container">
+        ${availableWeights.map(({ weight, price }) => {
+          const currentQty = quantities[productId][weight] || 0;
+          return `
+            <div class="weight-row">
+              <div class="weight-info">
+                <span class="weight-label">${weight}г</span>
+                <span class="weight-price">${price}₽</span>
+              </div>
+              <div class="quantity-controls">
+                <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">−</button>
+                <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">+</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
     </div>
   `;
 }
+
 
 function openProductModal(productId) {
   currentProduct = productId;
