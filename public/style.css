@@ -218,12 +218,17 @@ body {
   font-size: 18px; /* стрелочки покрупнее */
   font-weight: 700;
   cursor: pointer;
-  padding: 0 4px; /* убираем огромный круг */
+  padding: 0 6px; /* убираем огромный круг */
+    line-height: 1;
 }
+
+.quantity-btn.decrement::before { content: "◀"; }
+.quantity-btn.increment::before { content: "▶"; }
+
 .quantity-value {
   font-size: 14px;
   font-weight: 600;
-  min-width: 20px;
+  min-width: 24px;
   text-align: center;
 }
 
