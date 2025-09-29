@@ -177,55 +177,53 @@ body {
 /* контролы веса */
 .weight-row-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: row;
+  gap: 8px; /* меньше расстояние между блоками */
   width: 100%;
 }
 .weight-row {
   flex: 1 1 50%;
-  max-width: calc(50% - 6px); /* чтобы gap учитывался */
+  max-width: calc(50% - 4px);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px;
-  height: 56px;
-  border-radius: 12px;
+  padding: 6px 10px; /* компактнее */
+  height: 48px;
+  border-radius: 10px;
   border: 1px solid var(--border-color);
-  background: var(--card-bg);
+  background: var(--card-bg); /* фон именно тут */
   box-sizing: border-box;
 }
 .weight-info {
   display: flex;
   gap: 8px;
 }
-.weight-label {
+/* Текст */
+.weight-label, .weight-price {
   font-size: 14px;
   font-weight: 600;
 }
-.weight-price {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--primary);
-}
+.weight-price { color: var(--primary); }
+
+/* Контролы количества */
 .quantity-controls {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px; /* ближе друг к другу */
 }
 .quantity-btn {
-  width: 14px; height: 14px;
-  border: 2px solid var(--primary);
-  border-radius: 50%;
+  border: none;
   background: none;
   color: var(--primary);
-  font-size: 14px; font-weight: 600;
-  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; /* стрелочки покрупнее */
+  font-weight: 700;
   cursor: pointer;
+  padding: 0 4px; /* убираем огромный круг */
 }
 .quantity-value {
   font-size: 14px;
   font-weight: 600;
-  min-width: 14px;
+  min-width: 20px;
   text-align: center;
 }
 
