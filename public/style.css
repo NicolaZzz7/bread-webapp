@@ -209,7 +209,7 @@ body {
 .quantity-controls {
   display: flex;
   align-items: center;
-  gap: 4px; /* ближе друг к другу */
+  gap: 2px; /* ближе друг к другу */
 }
 .quantity-btn {
   border: none;
@@ -221,9 +221,6 @@ body {
   padding: 0 6px; /* убираем огромный круг */
     line-height: 1;
 }
-
-.quantity-btn.decrement::before { content: "◀"; }
-.quantity-btn.increment::before { content: "▶"; }
 
 .quantity-value {
   font-size: 14px;
