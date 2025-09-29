@@ -348,22 +348,17 @@ body {
 
 .weight-row-container {
   display: flex;
+  flex-wrap: wrap;   /* перенос если не влезает */
   gap: 12px;
-  align-items: center;
-  justify-content: space-between;
   width: 100%;
-  height: 100%;
-  padding: 0 8px;       /* внутренние отступы контейнера */
-  box-sizing: border-box;
-    flex-wrap: wrap;
-  background: transparent; /* фон дает .product-card, а не внутренние элементы */
 }
 
 .weight-row {
-  flex: 1 1 calc(50% - 12px); /* два в ряд */
+  flex: 1 1 calc(50% - 12px);   /* два блока в ряд */
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 12px;
   height: 56px;
   border-radius: 12px;
   border: 1px solid var(--border-color);

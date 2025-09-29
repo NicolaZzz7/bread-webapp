@@ -55,15 +55,17 @@ function renderProducts(productsToRender) {
 
 function activateTransitions() {
   document.querySelectorAll('.transition-container > *').forEach(el => {
-    if (!el.classList.contains('activated')) {
+    // добавляем анимацию только если ещё ни разу не активировался
+    if (!el.dataset.activated) {
       el.classList.add('hidden');
       requestAnimationFrame(() => {
         el.classList.remove('hidden');
-        el.classList.add('activated'); // помечаем и больше не трогаем
+        el.dataset.activated = "true"; // помечаем элемент, чтобы больше не мигал
       });
     }
   });
 }
+
 
 function createProductCard(productId, product) {
   if (!quantities[productId]) quantities[productId] = {};
