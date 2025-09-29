@@ -122,15 +122,17 @@ body {
 
 .product-image {
   width: 100%;
-  height: 160px;
+  aspect-ratio: 800 / 464; /* или 16 / 9 */
   margin-bottom: 12px;
   border-radius: 12px;
   overflow: hidden;
+  background: #f0f0f0; /* чтобы фон не прыгал */
 }
 .product-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+    display: block;
 }
 
 .product-info { flex: 1; }
