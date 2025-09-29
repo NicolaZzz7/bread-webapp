@@ -118,9 +118,26 @@ function createProductCard(productId, product) {
 
 function showWeightControls(productId) {
   visibleWeightControls[productId] = true;
-  // перерисуем каталог — карточка покажет контролы вместо кнопки
   renderProducts(products);
+
+  // Ставим таймер на 5 секунд
+  setTimeout(() => {
+    const totalQty = getTotalQtyForProduct(productId);
+    if (totalQty === 0) {
+      // скрываем контролы и возвращаем кнопку "Добавить"
+      visibleWeightControls[productId] = false;
+      renderProducts(products);
+
+      // найти кнопку и подсветить её
+      const btn = document.querySelector(`.product-card[data-product-id="${productId}"] .add-to-cart-btn`);
+      if (btn) {
+        btn.classList.add("button-highlight");
+        setTimeout(() => btn.classList.remove("button-highlight"), 1000);
+      }
+    }
+  }, 5000);
 }
+
 
 
 function openProductModal(productId) {

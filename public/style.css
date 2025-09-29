@@ -499,7 +499,7 @@ body {
     font-weight: 600;
     cursor: pointer;
     margin-top: 16px;
-    transition: background 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .add-to-cart-btn:hover {
@@ -509,6 +509,12 @@ body {
 .add-to-cart-btn:disabled {
     background: #a0aec0;
     cursor: not-allowed;
+}
+
+.add-to-cart-btn.button-highlight {
+  background-color: #4caf50 !important; /* зелёный */
+  color: #fff !important;
+  transform: scale(1.05);
 }
 
 .add-button {
