@@ -298,6 +298,12 @@ function changeWeightQuantity(productId, weight, delta) {
   const qtyEl = document.getElementById(`qty-${productId}-${weight}`);
   if (qtyEl) qtyEl.textContent = newQty;
 
+  // обновляем значение в модалке тоже
+    const modalQtyEl = document.querySelector(
+      `#productModal .quantity-value#qty-${productId}-${weight}`
+    );
+    if (modalQtyEl) modalQtyEl.textContent = newQty;
+
   if (delta > 0) {
     showNotification(`Добавлен ${product.name} (${weight}г)`, 'success');
   } else if (delta < 0 && currentQty > 0) {

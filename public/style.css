@@ -188,7 +188,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 6px 10px; /* компактнее */
-  height: 48px;
+  height: 56px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
@@ -234,7 +234,7 @@ body {
   position: relative;
   width: 100%;
   min-height: 56px;
-  margin-top: 12px;
+  margin-top: 46px;
 }
 .transition-container > * {
   position: absolute;
