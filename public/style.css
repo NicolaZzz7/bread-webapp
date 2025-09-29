@@ -211,6 +211,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
+    background: var(--bg-color);
 }
 .quantity-btn {
   width: 32px; height: 32px;
