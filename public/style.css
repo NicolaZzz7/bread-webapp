@@ -419,9 +419,12 @@ body {
 /* Общий контейнер для плавного перехода */
 .transition-container {
   width: 100%;
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+    transition: opacity .28s ease, transform .28s ease;
   min-height: 56px;           /* ровно как кнопка */
   border-radius: 12px;        /* общее скругление */
-  overflow: hidden;           /* чтобы дети обрезались по скруглению */
+  overflow: visible;           /* чтобы дети обрезались по скруглению */
   display: block;
   box-sizing: border-box;
 }
@@ -547,11 +550,11 @@ body {
 
 .add-to-cart-btn {
   width: 100%;
-  height: 100%;
+  height: 56px;
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: 0;       /* обрезается родителем */
+  border-radius: 12px; /* гарантируем скругление у кнопки */
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
