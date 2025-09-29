@@ -49,8 +49,6 @@ function renderProducts(productsToRender) {
   grid.innerHTML = Object.entries(productsToRender).map(([productId, product]) =>
     createProductCard(productId, product)
   ).join('');
-
-  activateTransitions();
 }
 
 function activateTransitions() {
@@ -72,13 +70,14 @@ function createProductCard(productId, product) {
 
   const availableWeights = getAvailableWeights(product);
 
-  // Считаем актуальные количества из корзины для каждого веса
+  // актуальные количества из корзины
   availableWeights.forEach(({ weight }) => {
     const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
     quantities[productId][weight] = matchingItems.length;
   });
 
   const totalQtyForProduct = getTotalQtyForProduct(productId);
+  const showControls = totalQtyForProduct > 0 || visibleWeightControls[productId];
 
   return `
     <div class="product-card" data-product-id="${productId}">
@@ -104,51 +103,56 @@ function createProductCard(productId, product) {
       </div>
 
       <div class="transition-container">
-        ${ (totalQtyForProduct === 0 && !visibleWeightControls[productId]) ? `
-          <button class="add-to-cart-btn"
-            onclick="(function(e){ e.stopPropagation(); showWeightControls('${productId}'); })(event)">
-            ➕ Добавить в корзину
-          </button>
-        ` : `
-          <div class="weight-row-container" onclick="event.stopPropagation()">
-            ${availableWeights.map(({ weight, price }) => {
-              const currentQty = quantities[productId][weight] || 0;
-              return `
-                <div class="weight-row">
-                  <div class="weight-info">
-                    <span class="weight-label">${weight}г</span>
-                    <span class="weight-price">${price}₽</span>
-                  </div>
-                  <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', -1); })(event)">−</button>
-                    <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                    <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', 1); })(event)">+</button>
-                  </div>
+        <!-- Кнопка -->
+        <button class="add-to-cart-btn ${showControls ? 'hidden' : 'visible'}"
+          onclick="(function(e){ e.stopPropagation(); showWeightControls('${productId}'); })(event)">
+          ➕ Добавить в корзину
+        </button>
+
+        <!-- Контролы -->
+        <div class="weight-row-container ${showControls ? 'visible' : 'hidden'}" onclick="event.stopPropagation()">
+          ${availableWeights.map(({ weight, price }) => {
+            const currentQty = quantities[productId][weight] || 0;
+            return `
+              <div class="weight-row">
+                <div class="weight-info">
+                  <span class="weight-label">${weight}г</span>
+                  <span class="weight-price">${price}₽</span>
                 </div>
-              `;
-            }).join('')}
-          </div>
-        `}
+                <div class="quantity-controls">
+                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', -1); })(event)">−</button>
+                  <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', 1); })(event)">+</button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
       </div>
     </div>
   `;
 }
 
 
+
 function showWeightControls(productId) {
   visibleWeightControls[productId] = true;
   renderProducts(products);
 
-  // Ставим таймер на 5 секунд
+  toggleTransition(productId, true);
+
+  // таймер на 5 сек, если корзина пуста — возвращаем кнопку
   setTimeout(() => {
     const totalQty = getTotalQtyForProduct(productId);
     if (totalQty === 0) {
-      // скрываем контролы и возвращаем кнопку "Добавить"
       visibleWeightControls[productId] = false;
       renderProducts(products);
+      toggleTransition(productId, false);
 
-      // найти кнопку и подсветить её
-      const btn = document.querySelector(`.product-card[data-product-id="${productId}"] .add-to-cart-btn`);
+      // подсветка кнопки
+      const btn = document.querySelector(
+        `.product-card[data-product-id="${productId}"] .add-to-cart-btn`
+      );
       if (btn) {
         btn.classList.add("button-highlight");
         setTimeout(() => btn.classList.remove("button-highlight"), 1000);
@@ -156,6 +160,29 @@ function showWeightControls(productId) {
     }
   }, 5000);
 }
+
+function toggleTransition(productId, showControls) {
+  const container = document.querySelector(
+    `.product-card[data-product-id="${productId}"] .transition-container`
+  );
+  if (!container) return;
+
+  const button = container.querySelector(".add-to-cart-btn");
+  const controls = container.querySelector(".weight-row-container");
+
+  if (showControls) {
+    button.classList.remove("visible");
+    button.classList.add("hidden");
+    controls.classList.remove("hidden");
+    controls.classList.add("visible");
+  } else {
+    controls.classList.remove("visible");
+    controls.classList.add("hidden");
+    button.classList.remove("hidden");
+    button.classList.add("visible");
+  }
+}
+
 
 
 
