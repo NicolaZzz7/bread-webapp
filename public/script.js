@@ -120,9 +120,9 @@ function createProductCard(productId, product) {
                   <span class="weight-price">${price}₽</span>
                 </div>
                 <div class="quantity-controls">
-                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', -1); })(event)">−</button>
+                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', -1); })(event)">"◀"</button>
                   <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', 1); })(event)">+</button>
+                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', 1); })(event)">"▶"</button>
                 </div>
               </div>
             `;
