@@ -254,11 +254,11 @@ function openProductModal(productId) {
           </div>
           <div class="summary-totals">
             <div class="summary-item total">
-              <span>Итого:</span>
+              <span>🍞</span>
               <span id="modalTotal">0₽</span>
             </div>
             <div class="summary-item total-cart">
-              <span>Итого в корзине:</span>
+              <span>🛒</span>
               <span id="cartTotal">0₽</span>
             </div>
           </div>
