@@ -355,19 +355,19 @@ body {
   height: 100%;
   padding: 0 8px;       /* внутренние отступы контейнера */
   box-sizing: border-box;
+    flex-wrap: wrap;
   background: transparent; /* фон дает .product-card, а не внутренние элементы */
 }
 
 .weight-row {
-  flex: 1;
+  flex: 1 1 calc(50% - 12px); /* два в ряд */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100%;
-  padding: 0 12px;
-  border-radius: 0;     /* обрезается общим container */
-  border: none;         /* убираем отдельный border (чтобы не отличалось от кнопки) */
-  background: transparent;
+  height: 56px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
   box-sizing: border-box;
 }
 
