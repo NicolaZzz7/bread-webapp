@@ -87,30 +87,33 @@ function createProductCard(productId, product) {
         </div>
       </div>
 
-      ${ (totalQtyForProduct === 0 && !visibleWeightControls[productId]) ? `
-        <button class="add-to-cart-btn" onclick="(function(e){ e.stopPropagation(); showWeightControls('${productId}'); })(event)">
-          ➕ Добавить в корзину
-        </button>
-      ` : `
-        <div class="weight-row-container" onclick="event.stopPropagation()">
-          ${availableWeights.map(({ weight, price }) => {
-            const currentQty = quantities[productId][weight] || 0;
-            return `
-              <div class="weight-row">
-                <div class="weight-info">
-                  <span class="weight-label">${weight}г</span>
-                  <span class="weight-price">${price}₽</span>
+      <div class="transition-container">
+        ${ (totalQtyForProduct === 0 && !visibleWeightControls[productId]) ? `
+          <button class="add-to-cart-btn fade-scale-enter-active"
+            onclick="(function(e){ e.stopPropagation(); showWeightControls('${productId}'); })(event)">
+            ➕ Добавить в корзину
+          </button>
+        ` : `
+          <div class="weight-row-container fade-scale-enter-active" onclick="event.stopPropagation()">
+            ${availableWeights.map(({ weight, price }) => {
+              const currentQty = quantities[productId][weight] || 0;
+              return `
+                <div class="weight-row">
+                  <div class="weight-info">
+                    <span class="weight-label">${weight}г</span>
+                    <span class="weight-price">${price}₽</span>
+                  </div>
+                  <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', -1); })(event)">−</button>
+                    <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                    <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', 1); })(event)">+</button>
+                  </div>
                 </div>
-                <div class="quantity-controls">
-                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', -1); })(event)">−</button>
-                  <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', 1); })(event)">+</button>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      `}
+              `;
+            }).join('')}
+          </div>
+        `}
+      </div>
     </div>
   `;
 }

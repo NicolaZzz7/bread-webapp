@@ -347,9 +347,11 @@ body {
 
 
 .weight-row-container {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  min-height: 56px; /* та же высота, что у кнопки */
+  align-items: center;
 }
 
 .weight-row {
@@ -357,6 +359,7 @@ body {
     display: flex;
     flex-direction: column; /* Вертикальное размещение */
     align-items: center;
+    justify-content: center;
     padding: 12px;
     background: var(--bg-color);
     border-radius: 12px;
@@ -408,6 +411,32 @@ body {
     font-weight: 600;
     min-width: 30px;
     text-align: center;
+}
+
+/* Общий контейнер для плавного перехода */
+.transition-container {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Скрытие/появление с плавным масштабом и прозрачностью */
+.fade-scale-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+.fade-scale-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.3s ease;
+}
+.fade-scale-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+.fade-scale-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.3s ease;
 }
 
 .addons-section {
