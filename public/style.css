@@ -209,7 +209,7 @@ body {
 .quantity-controls {
   display: flex;
   align-items: center;
-  gap: 2px; /* ближе друг к другу */
+
 }
 .quantity-btn {
   border: none;
@@ -225,7 +225,7 @@ body {
 .quantity-value {
   font-size: 14px;
   font-weight: 600;
-  min-width: 24px;
+  min-width: 16px;
   text-align: center;
 }
 
