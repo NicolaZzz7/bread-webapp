@@ -348,13 +348,22 @@ body {
 
 .weight-row-container {
   display: flex;
-  flex-wrap: wrap;   /* перенос если не влезает */
+    flex-direction: row !important;
+  flex-wrap: wrap;
+    flex: 1 1 calc(50% - 12px);
   gap: 12px;
   width: 100%;
+  padding: 8px;                  /* внутренний отступ */
+  background: var(--bg-color);   /* фон такой же, как в модалке */
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
 }
 
 .weight-row {
   flex: 1 1 calc(50% - 12px);   /* два блока в ряд */
+    flex-direction: row !important;
+  flex-wrap: wrap;
+    gap: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -415,6 +424,7 @@ body {
   position: relative;
   width: 100%;
   min-height: 56px;
+    margin-top: 12px;
 }
 
 .transition-container > * {
