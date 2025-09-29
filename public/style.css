@@ -306,7 +306,7 @@ body {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--card-bg);
+  background: var(--bg-color);
   border-radius: 20px;
   padding: 24px;
   width: 90%; max-width: 400px;
