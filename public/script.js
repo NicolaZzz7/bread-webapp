@@ -4,6 +4,13 @@ cart = cart.filter(item => item && item.name && item.name !== 'undefined');
 let selectedWeights = {};
 let currentProduct = null;
 let quantities = {};
+let visibleWeightControls = {};
+// хелпер: суммарное количество товара в корзине (по всем весам)
+function getTotalQtyForProduct(productId) {
+  if (!quantities[productId]) return 0;
+  return Object.values(quantities[productId]).reduce((s, v) => s + (Number(v) || 0), 0);
+}
+
 
 Telegram.WebApp.ready();
 Telegram.WebApp.expand();
@@ -49,19 +56,26 @@ function createProductCard(productId, product) {
 
   const availableWeights = getAvailableWeights(product);
 
-  // считаем количество в корзине
-  let totalQtyForProduct = 0;
+  // Считаем актуальные количества из корзины для каждого веса
   availableWeights.forEach(({ weight }) => {
     const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
     quantities[productId][weight] = matchingItems.length;
-    totalQtyForProduct += matchingItems.length;
   });
+
+  const totalQtyForProduct = getTotalQtyForProduct(productId);
 
   return `
     <div class="product-card" data-product-id="${productId}">
+      ${totalQtyForProduct > 0 ? `
+        <div class="product-quantity-indicator">
+          <span class="product-quantity-count">${totalQtyForProduct}</span>
+        </div>
+      ` : ''}
+
       <div class="product-image" onclick="openProductModal('${productId}')">
         <img src="${(product.images && product.images[0]) || '/placeholder.jpg'}" alt="${product.name}">
       </div>
+
       <div class="product-info">
         <div class="product-name" onclick="openProductModal('${productId}')">
           ${product.name}
@@ -73,40 +87,38 @@ function createProductCard(productId, product) {
         </div>
       </div>
 
-      ${totalQtyForProduct === 0
-        ? `
-          <button class="add-to-cart-btn" onclick="showWeightControls('${productId}')">
-            ➕ Добавить в корзину
-          </button>
-        `
-        : `
-          <div class="weight-row-container">
-            ${availableWeights.map(({ weight, price }) => {
-              const currentQty = quantities[productId][weight] || 0;
-              return `
-                <div class="weight-row">
-                  <div class="weight-info">
-                    <span class="weight-label">${weight}г</span>
-                    <span class="weight-price">${price}₽</span>
-                  </div>
-                  <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">−</button>
-                    <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                    <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">+</button>
-                  </div>
+      ${ (totalQtyForProduct === 0 && !visibleWeightControls[productId]) ? `
+        <button class="add-to-cart-btn" onclick="(function(e){ e.stopPropagation(); showWeightControls('${productId}'); })(event)">
+          ➕ Добавить в корзину
+        </button>
+      ` : `
+        <div class="weight-row-container" onclick="event.stopPropagation()">
+          ${availableWeights.map(({ weight, price }) => {
+            const currentQty = quantities[productId][weight] || 0;
+            return `
+              <div class="weight-row">
+                <div class="weight-info">
+                  <span class="weight-label">${weight}г</span>
+                  <span class="weight-price">${price}₽</span>
                 </div>
-              `;
-            }).join('')}
-          </div>
-        `
-      }
+                <div class="quantity-controls">
+                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', -1); })(event)">−</button>
+                  <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                  <button class="quantity-btn" onclick="(function(e){ e.stopPropagation(); changeWeightQuantity('${productId}', '${weight}', 1); })(event)">+</button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
     </div>
   `;
 }
 
+
 function showWeightControls(productId) {
-  // просто перерисовываем каталог, чтобы для этого товара
-  // вместо кнопки отобразились контролы
+  visibleWeightControls[productId] = true;
+  // перерисуем каталог — карточка покажет контролы вместо кнопки
   renderProducts(products);
 }
 
@@ -211,12 +223,17 @@ function openProductModal(productId) {
 
 function changeWeightQuantity(productId, weight, delta) {
   const product = products[productId];
+  if (!quantities[productId]) quantities[productId] = {};
   const currentQty = quantities[productId][weight] || 0;
   const newQty = Math.max(0, currentQty + delta);
   quantities[productId][weight] = newQty;
 
+  // обновляем корзину (эта функция в твоём коде уже добавляет/удаляет элементы и сохраняет cart)
   updateCartItem(productId, weight, delta);
-  document.getElementById(`qty-${productId}-${weight}`).textContent = newQty;
+
+  // обновим видимое значение, если элемент ещё есть в DOM
+  const qtyEl = document.getElementById(`qty-${productId}-${weight}`);
+  if (qtyEl) qtyEl.textContent = newQty;
 
   if (delta > 0) {
     showNotification(`Добавлен ${product.name} (${weight}г)`, 'success');
@@ -224,9 +241,17 @@ function changeWeightQuantity(productId, weight, delta) {
     showNotification(`Удалён ${product.name} (${weight}г)`, 'success');
   }
 
-  updateModalSummary(productId);
+  // если после изменения суммарно = 0, скрываем контролы (возвращаем кнопку "Добавить")
+  const totalQty = getTotalQtyForProduct(productId);
+  visibleWeightControls[productId] = totalQty > 0;
+
+  // если модалка открыта для этого продукта — обновляем её
+  if (currentProduct === productId) updateModalSummary(productId);
+
+  // перерисуем каталог (показываем/скрываем кнопку по суммарному количеству)
   renderProducts(products);
 }
+
 
 function updateModalSummary(productId) {
   const product = products[productId];
@@ -499,6 +524,9 @@ function clearCache() {
   localStorage.removeItem('catalog');
   loadCatalog();
 }
+
+
+
 
 document.getElementById('checkoutBtn')?.addEventListener('click', () => {
   if (cart.length === 0) {
