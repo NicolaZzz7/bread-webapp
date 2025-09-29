@@ -49,10 +49,12 @@ function createProductCard(productId, product) {
 
   const availableWeights = getAvailableWeights(product);
 
-  // Считаем количество по каждому весу в корзине
+  // считаем количество в корзине
+  let totalQtyForProduct = 0;
   availableWeights.forEach(({ weight }) => {
     const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
     quantities[productId][weight] = matchingItems.length;
+    totalQtyForProduct += matchingItems.length;
   });
 
   return `
@@ -71,26 +73,41 @@ function createProductCard(productId, product) {
         </div>
       </div>
 
-      <div class="weight-row-container">
-        ${availableWeights.map(({ weight, price }) => {
-          const currentQty = quantities[productId][weight] || 0;
-          return `
-            <div class="weight-row">
-              <div class="weight-info">
-                <span class="weight-label">${weight}г</span>
-                <span class="weight-price">${price}₽</span>
-              </div>
-              <div class="quantity-controls">
-                <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">−</button>
-                <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">+</button>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
+      ${totalQtyForProduct === 0
+        ? `
+          <button class="add-to-cart-btn" onclick="showWeightControls('${productId}')">
+            ➕ Добавить в корзину
+          </button>
+        `
+        : `
+          <div class="weight-row-container">
+            ${availableWeights.map(({ weight, price }) => {
+              const currentQty = quantities[productId][weight] || 0;
+              return `
+                <div class="weight-row">
+                  <div class="weight-info">
+                    <span class="weight-label">${weight}г</span>
+                    <span class="weight-price">${price}₽</span>
+                  </div>
+                  <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">−</button>
+                    <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                    <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">+</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `
+      }
     </div>
   `;
+}
+
+function showWeightControls(productId) {
+  // просто перерисовываем каталог, чтобы для этого товара
+  // вместо кнопки отобразились контролы
+  renderProducts(products);
 }
 
 
