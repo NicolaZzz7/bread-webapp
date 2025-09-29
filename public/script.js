@@ -55,7 +55,13 @@ function renderProducts(productsToRender) {
 
 function activateTransitions() {
   document.querySelectorAll('.transition-container > *').forEach(el => {
-    requestAnimationFrame(() => el.classList.add('visible'));
+    if (!el.classList.contains('activated')) {
+      el.classList.add('hidden'); // сначала скрываем
+      requestAnimationFrame(() => {
+        el.classList.remove('hidden'); // затем плавно показываем
+        el.classList.add('activated'); // помечаем как обработанный
+      });
+    }
   });
 }
 

@@ -419,9 +419,6 @@ body {
 /* Общий контейнер для плавного перехода */
 .transition-container {
   width: 100%;
-    opacity: 0;
-    transform: translateY(6px) scale(0.98);
-    transition: opacity .28s ease, transform .28s ease;
   min-height: 56px;           /* ровно как кнопка */
   border-radius: 12px;        /* общее скругление */
   overflow: visible;           /* чтобы дети обрезались по скруглению */
@@ -431,12 +428,14 @@ body {
 
 .transition-container > * {
   width: 100%;
-  height: 56px;               /* унифицируем высоту */
-  opacity: 0;
-  transform: translateY(6px) scale(0.98);
-  transition: opacity .28s ease, transform .28s ease;
+  height: 56px;
   display: block;
   box-sizing: border-box;
+
+  /* по умолчанию видно */
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity .28s ease, transform .28s ease;
 }
 
 .transition-container > *.visible {
@@ -448,6 +447,12 @@ body {
 .transition-container > *.visible {
   opacity: 1;
   transform: translateY(0) scale(1);
+}
+
+.transition-container > *.hidden {
+  /* скрыто (для анимации) */
+  opacity: 0;
+  transform: translateY(6px) scale(0.98);
 }
 
 /* Скрытие/появление с плавным масштабом и прозрачностью */
