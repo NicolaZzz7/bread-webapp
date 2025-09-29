@@ -348,22 +348,13 @@ body {
 
 .weight-row-container {
   display: flex;
-    flex-direction: row !important;
   flex-wrap: wrap;
-    flex: 1 1 calc(50% - 12px);
   gap: 12px;
   width: 100%;
-  padding: 8px;                  /* внутренний отступ */
-  background: var(--bg-color);   /* фон такой же, как в модалке */
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
 }
 
 .weight-row {
-  flex: 1 1 calc(50% - 12px);   /* два блока в ряд */
-    flex-direction: row !important;
-  flex-wrap: wrap;
-    gap: 12px;
+  flex: 1 1 calc(50% - 12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -371,7 +362,7 @@ body {
   height: 56px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  background: var(--card-bg);
+  background: var(--card-bg); /* фон */
   box-sizing: border-box;
 }
 
