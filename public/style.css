@@ -182,7 +182,8 @@ body {
   width: 100%;
 }
 .weight-row {
-  flex: 1 1 calc(50% - 12px);
+  flex: 1 1 50%;
+  max-width: calc(50% - 6px); /* чтобы gap учитывался */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -469,6 +470,11 @@ body {
   .header h1 { font-size: 24px; }
   .product-card { padding: 16px; }
   .modal-content { width: 95%; padding: 20px; }
-  .weight-row-container { flex-direction: column; }
-  .weight-row { width: 100%; }
+  .weight-row-container {
+    flex-direction: row;
+  }
+  .weight-row {
+    flex: 1 1 50%;
+    max-width: calc(50% - 6px);
+  }
 }
