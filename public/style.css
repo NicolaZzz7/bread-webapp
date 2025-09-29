@@ -347,24 +347,23 @@ body {
 
 
 .weight-row-container {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  min-height: 56px; /* та же высота, что у кнопки */
-  align-items: center;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    min-height: 56px; /* ровно как у кнопки */
+    align-items: stretch; /* растягиваем */
 }
 
 .weight-row {
     flex: 1;
     display: flex;
-    flex-direction: column; /* Вертикальное размещение */
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
-    padding: 12px;
-    background: var(--bg-color);
+    align-items: center;
+    padding: 8px;
     border-radius: 12px;
-    border: 1px solid var(--border-color);
-    min-width: 120px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-color);
 }
 
 .weight-info {
@@ -417,6 +416,17 @@ body {
 .transition-container {
   overflow: hidden;
   transition: all 0.3s ease;
+}
+
+.transition-container > * {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: all 0.3s ease;
+}
+
+.transition-container > *.visible {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Скрытие/появление с плавным масштабом и прозрачностью */
@@ -519,16 +529,18 @@ body {
 
 .add-to-cart-btn {
     width: 100%;
-    padding: 16px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 16px;
-    transition: background-color 0.3s, transform 0.2s;
+  height: 56px; /* фиксированная высота */
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .add-to-cart-btn:hover {

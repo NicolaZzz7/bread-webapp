@@ -49,6 +49,14 @@ function renderProducts(productsToRender) {
   grid.innerHTML = Object.entries(productsToRender).map(([productId, product]) =>
     createProductCard(productId, product)
   ).join('');
+
+  activateTransitions();
+}
+
+function activateTransitions() {
+  document.querySelectorAll('.transition-container > *').forEach(el => {
+    requestAnimationFrame(() => el.classList.add('visible'));
+  });
 }
 
 function createProductCard(productId, product) {
