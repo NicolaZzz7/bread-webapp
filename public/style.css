@@ -184,7 +184,7 @@ body {
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 
 .bread-frame.active {
@@ -193,7 +193,7 @@ body {
 
 .product-quantity-count {
   position: absolute;
-  bottom: 1px;
+  bottom: 18px;
   right: -8px;
   min-width: 18px;
   height: 18px;
