@@ -292,35 +292,40 @@ function changeWeightQuantity(productId, weight, delta) {
   const newQty = Math.max(0, currentQty + delta);
   quantities[productId][weight] = newQty;
 
-  // обновляем корзину (эта функция в твоём коде уже добавляет/удаляет элементы и сохраняет cart)
   updateCartItem(productId, weight, delta);
 
-  // обновим видимое значение, если элемент ещё есть в DOM
+  // обновляем количество в каталоге
   const qtyEl = document.getElementById(`qty-${productId}-${weight}`);
   if (qtyEl) qtyEl.textContent = newQty;
 
-  // обновляем значение в модалке тоже
-    const modalQtyEl = document.querySelector(
-      `#productModal .quantity-value#qty-${productId}-${weight}`
-    );
-    if (modalQtyEl) modalQtyEl.textContent = newQty;
+  // обновляем количество в модалке
+  const modalQtyEl = document.querySelector(
+    `#productModal .quantity-value#qty-${productId}-${weight}`
+  );
+  if (modalQtyEl) modalQtyEl.textContent = newQty;
 
-  if (delta > 0) {
-    showNotification(`Добавлен ${product.name} (${weight}г)`, 'success');
-  } else if (delta < 0 && currentQty > 0) {
-    showNotification(`Удалён ${product.name} (${weight}г)`, 'success');
+  // обновляем модальную корзину
+  const modalCart = document.getElementById("modalCartIndicator");
+  if (modalCart) {
+    modalCart.classList.toggle("visible", cart.length > 0);
+    const modalCartCount = modalCart.querySelector("#cartCount");
+    if (modalCartCount) modalCartCount.textContent = getTotalItems();
   }
 
-  // если после изменения суммарно = 0, скрываем контролы (возвращаем кнопку "Добавить")
+  if (delta > 0) {
+    showNotification(`Добавлен ${product.name} (${weight}г)`, "success");
+  } else if (delta < 0 && currentQty > 0) {
+    showNotification(`Удалён ${product.name} (${weight}г)`, "success");
+  }
+
   const totalQty = getTotalQtyForProduct(productId);
   visibleWeightControls[productId] = totalQty > 0;
 
-  // если модалка открыта для этого продукта — обновляем её
   if (currentProduct === productId) updateModalSummary(productId);
 
-  // перерисуем каталог (показываем/скрываем кнопку по суммарному количеству)
   renderProducts(products);
 }
+
 
 
 function updateModalSummary(productId) {
