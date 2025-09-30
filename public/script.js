@@ -49,6 +49,7 @@ function renderProducts(productsToRender) {
   grid.innerHTML = Object.entries(productsToRender).map(([productId, product]) =>
     createProductCard(productId, product)
   ).join('');
+  animateBreadIcons();
 }
 
 function activateTransitions() {
@@ -82,10 +83,12 @@ function createProductCard(productId, product) {
   return `
     <div class="product-card" data-product-id="${productId}">
       ${totalQtyForProduct > 0 ? `
-        <div class="product-quantity-indicator">
-          <span class="product-quantity-count">${totalQtyForProduct}</span>
-        </div>
-      ` : ''}
+  <div class="product-quantity-indicator">
+    <img src="/bread-steam-1.svg" alt="Выбрано" class="bread-icon">
+    <span class="product-quantity-count">${totalQtyForProduct}</span>
+  </div>
+` : ''}
+
 
       <div class="product-image" onclick="openProductModal('${productId}')">
         <img src="${(product.images && product.images[0]) || '/placeholder.jpg'}" alt="${product.name}">
@@ -511,6 +514,17 @@ function showNotification(message, type = 'info') {
       }
     }, 300);
   }, 3000);
+}
+
+function animateBreadIcons() {
+  let frame = 1;
+  setInterval(() => {
+    const icons = document.querySelectorAll('.product-quantity-indicator .bread-icon');
+    icons.forEach(icon => {
+      frame = (frame % 3) + 1; // переключаем кадры: 1 → 2 → 3 → 1
+      icon.src = `/bread-steam-${frame}.svg`;
+    });
+  }, 500); // каждые 0.5с
 }
 
 document.addEventListener('click', function(e) {
