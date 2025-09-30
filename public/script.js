@@ -533,7 +533,7 @@ function animateBreadIcons() {
       frames[frame].classList.remove('active');
       frame = (frame + 1) % frames.length;
       frames[frame].classList.add('active');
-    }, 50); // каждая секунда новый кадр
+    }, 200); // каждая секунда новый кадр
   });
 }
 
