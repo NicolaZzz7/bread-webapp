@@ -88,6 +88,9 @@ function createProductCard(productId, product) {
     <img src="/bread-steam-1.svg" class="bread-frame active">
     <img src="/bread-steam-2.svg" class="bread-frame">
     <img src="/bread-steam-3.svg" class="bread-frame">
+    <img src="/bread-steam-4.svg" class="bread-frame">
+    <img src="/bread-steam-5.svg" class="bread-frame">
+    <img src="/bread-steam-6.svg" class="bread-frame">
   </div>
   <span class="product-quantity-count">${totalQtyForProduct}</span>
 </div>
@@ -530,7 +533,7 @@ function animateBreadIcons() {
       frames[frame].classList.remove('active');
       frame = (frame + 1) % frames.length;
       frames[frame].classList.add('active');
-    }, 1000); // каждая секунда новый кадр
+    }, 500); // каждая секунда новый кадр
   });
 }
 
