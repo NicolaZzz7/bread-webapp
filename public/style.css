@@ -166,30 +166,42 @@ body {
 
 .product-quantity-indicator {
   position: absolute;
-  top: 10px; right: 10px;
-  width: 40px; height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
 }
 
-.product-quantity-indicator .bread-icon {
+.bread-anim {
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  animation: opacity 0.3s ease;;
+}
+
+.bread-frame {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.bread-frame.active {
+  opacity: 1;
 }
 
 .product-quantity-count {
   position: absolute;
-  bottom: -6px; right: -6px;
-  background: var(--primary);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 50%;
+  bottom: -6px;
+  right: -6px;
   min-width: 18px;
   height: 18px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;

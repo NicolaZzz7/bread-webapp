@@ -84,9 +84,14 @@ function createProductCard(productId, product) {
     <div class="product-card" data-product-id="${productId}">
       ${totalQtyForProduct > 0 ? `
   <div class="product-quantity-indicator">
-    <img src="/bread-steam-1.svg" alt="Выбрано" class="bread-icon">
-    <span class="product-quantity-count">${totalQtyForProduct}</span>
+  <div class="bread-anim">
+    <img src="/bread-steam-1.svg" class="bread-frame active">
+    <img src="/bread-steam-2.svg" class="bread-frame">
+    <img src="/bread-steam-3.svg" class="bread-frame">
   </div>
+  <span class="product-quantity-count">${totalQtyForProduct}</span>
+</div>
+
 ` : ''}
 
 
@@ -517,20 +522,16 @@ function showNotification(message, type = 'info') {
 }
 
 function animateBreadIcons() {
-  let frame = 1;
-  setInterval(() => {
-    const icons = document.querySelectorAll('.product-quantity-indicator .bread-icon');
-    icons.forEach(icon => {
-      // плавно скрываем
-      icon.style.opacity = 0;
-      setTimeout(() => {
-        frame = (frame % 3) + 1; // переключаем кадры
-        icon.src = `/bread-steam-${frame}.svg`;
-        // плавно показываем
-        icon.style.opacity = 1;
-      }, 300); // тайм совпадает с transition
-    });
-  }, 800); // общее время цикла (0.8 сек)
+  const animations = document.querySelectorAll('.bread-anim');
+  animations.forEach(anim => {
+    let frame = 0;
+    const frames = anim.querySelectorAll('.bread-frame');
+    setInterval(() => {
+      frames[frame].classList.remove('active');
+      frame = (frame + 1) % frames.length;
+      frames[frame].classList.add('active');
+    }, 1000); // каждая секунда новый кадр
+  });
 }
 
 document.addEventListener('click', function(e) {
