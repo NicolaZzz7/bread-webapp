@@ -521,10 +521,16 @@ function animateBreadIcons() {
   setInterval(() => {
     const icons = document.querySelectorAll('.product-quantity-indicator .bread-icon');
     icons.forEach(icon => {
-      frame = (frame % 3) + 1; // переключаем кадры: 1 → 2 → 3 → 1
-      icon.src = `/bread-steam-${frame}.svg`;
+      // плавно скрываем
+      icon.style.opacity = 0;
+      setTimeout(() => {
+        frame = (frame % 3) + 1; // переключаем кадры
+        icon.src = `/bread-steam-${frame}.svg`;
+        // плавно показываем
+        icon.style.opacity = 1;
+      }, 300); // тайм совпадает с transition
     });
-  }, 500); // каждые 0.5с
+  }, 800); // общее время цикла (0.8 сек)
 }
 
 document.addEventListener('click', function(e) {
