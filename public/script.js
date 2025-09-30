@@ -265,7 +265,8 @@ function openProductModal(productId) {
         </div>
       </div>
       <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
-        🛒<span id="cartCount">${getTotalItems()}</span>
+       <img src="/bag.svg" alt="Корзина" class="cart-icon">
+       <span id="cartCount" class="cart-count">${getTotalItems()}</span>
       </div>
 
   `;
