@@ -126,7 +126,7 @@ body {
   margin-bottom: 12px;
   border-radius: 12px;
   overflow: hidden;
-  background: #f0f0f0; /* чтобы фон не прыгал */
+  background: var(--card-bg); /* чтобы фон не прыгал */
 }
 .product-image img {
   width: 100%;
@@ -388,6 +388,14 @@ body {
   font-size: 14px;
   color: var(--primary);
 }
+
+#productModal .cart-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 2000; /* выше модалки */
+}
+
 
 /* ==============================
    5. КОРЗИНА

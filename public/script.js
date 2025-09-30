@@ -263,10 +263,11 @@ function openProductModal(productId) {
             </div>
           </div>
         </div>
-      <button class="add-to-cart-btn" id="addToCartBtn" onclick="addToCart('${productId}')">
-        🛒 Перейти в корзину
-      </button>
-    </div>
+      </div>
+      <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
+        🛒<span id="cartCount">${getTotalItems()}</span>
+      </div>
+
   `;
 
   document.getElementById('productModal').innerHTML = modalHTML;
@@ -340,9 +341,11 @@ function updateModalSummary(productId) {
   document.getElementById('totalItems').textContent = `${totalItems} шт`;
   document.getElementById('modalTotal').textContent = `${totalPrice}₽`;
   document.getElementById('cartTotal').textContent = `${getTotalPrice()}₽`;
-  const addToCartBtn = document.getElementById('addToCartBtn');
-  if (addToCartBtn) {
-    addToCartBtn.style.display = cart.length > 0 ? 'block' : 'none';
+
+  const modalCart = document.getElementById('modalCartIndicator');
+  if (modalCart) {
+    modalCart.classList.toggle('visible', cart.length > 0);
+    document.getElementById('cartCount').textContent = getTotalItems();
   }
 }
 
