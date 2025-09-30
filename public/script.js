@@ -83,18 +83,23 @@ function createProductCard(productId, product) {
   return `
     <div class="product-card" data-product-id="${productId}">
       ${totalQtyForProduct > 0 ? `
-  <div class="product-quantity-indicator">
-  <div class="bread-anim">
-    <img src="/bread-steam-1.svg" class="bread-frame active">
-    <img src="/bread-steam-2.svg" class="bread-frame">
-    <img src="/bread-steam-3.svg" class="bread-frame">
-    <img src="/bread-steam-4.svg" class="bread-frame">
-    <img src="/bread-steam-5.svg" class="bread-frame">
-    <img src="/bread-steam-6.svg" class="bread-frame">
-  </div>
-  <span class="product-quantity-count">${totalQtyForProduct}</span>
-</div>
+  <div class="product-quantity-indicator" data-product-id="${productId}">
+    <!-- статичная основа хлеба -->
+    <img src="/bread.svg" alt="bread" class="bread-base" />
 
+    <!-- анимируемый слой пара — все кадры лежат друг на друге -->
+    <div class="steam-anim" aria-hidden="true">
+      <img src="/steam-1.svg" class="steam-frame active" />
+      <img src="/steam-2.svg" class="steam-frame" />
+      <img src="/steam-3.svg" class="steam-frame" />
+      <img src="/steam-4.svg" class="steam-frame" />
+      <img src="/steam-5.svg" class="steam-frame" />
+      <img src="/steam-6.svg" class="steam-frame" />
+    </div>
+
+    <!-- счётчик поверх -->
+    <span class="product-quantity-count">${totalQtyForProduct}</span>
+  </div>
 ` : ''}
 
 
@@ -524,18 +529,28 @@ function showNotification(message, type = 'info') {
   }, 3000);
 }
 
-function animateBreadIcons() {
-  const animations = document.querySelectorAll('.bread-anim');
-  animations.forEach(anim => {
-    let frame = 0;
-    const frames = anim.querySelectorAll('.bread-frame');
+function animateSteam() {
+  // для каждой steam-anim запускаем цикл, но помечаем, чтобы не дублировать интервалы
+  document.querySelectorAll('.steam-anim').forEach(anim => {
+    if (anim.dataset.animated) return; // уже запущено
+    anim.dataset.animated = "1";
+
+    const frames = Array.from(anim.querySelectorAll('.steam-frame'));
+    if (frames.length === 0) return;
+
+    let idx = 0;
+    const interval = 600; // ms между сменами — подбери 700..1200
     setInterval(() => {
-      frames[frame].classList.remove('active');
-      frame = (frame + 1) % frames.length;
-      frames[frame].classList.add('active');
-    }, 200); // каждая секунда новый кадр
+      const prev = frames[idx];
+      prev.classList.remove('active');
+      idx = (idx + 1) % frames.length;
+      const next = frames[idx];
+      next.classList.add('active');
+      // оставляем плавный cross-fade через CSS transition
+    }, interval);
   });
 }
+
 
 document.addEventListener('click', function(e) {
   const modal = document.getElementById('productModal');

@@ -166,28 +166,51 @@ body {
 
 .product-quantity-indicator {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 40px;
+  top: 8px;
+  right: 8px;
+  width: 40px;      /* размер индикатора — подбери 36-48px на taste */
   height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* чтобы индикатор не перехватывал клики карточки */
+  z-index: 10;
 }
 
-.bread-anim {
-  position: relative;
+/* статичная основа хлеба (не будет меняться) */
+.product-quantity-indicator .bread-base {
+  position: absolute;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  pointer-events: none;
 }
 
-.bread-frame {
+/* контейнер анимации пара */
+.product-quantity-indicator .steam-anim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* кадры пара - наложены друг на друга */
+.product-quantity-indicator .steam-frame {
   position: absolute;
   top: 0; left: 0;
   width: 100%;
   height: 100%;
+  object-fit: contain;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.6s ease; /* cross-fade */
 }
 
-.bread-frame.active {
+/* активный кадр видим */
+.product-quantity-indicator .steam-frame.active {
   opacity: 1;
 }
 
@@ -205,6 +228,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  pointer-events: auto; /* если нужно, чтобы было кликабельно — можно убрать */
 }
 
 /* контролы веса */
