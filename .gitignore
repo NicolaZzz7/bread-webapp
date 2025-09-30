@@ -1,0 +1,12 @@
+# Никаких ключей!
+bread-bot-sa.json
+.env
+node_modules/
+public/png/*/*.png
+public/png/*/*.jfif
+public/png/*/*.jpg
+public/script2.js
+public/script3.js
+public/style2.css
+public/.gitignore
+
