@@ -49,7 +49,7 @@ function renderProducts(productsToRender) {
   grid.innerHTML = Object.entries(productsToRender).map(([productId, product]) =>
     createProductCard(productId, product)
   ).join('');
-  animateBreadIcons();
+  animateSteam();
 }
 
 function activateTransitions() {
