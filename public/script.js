@@ -84,16 +84,15 @@ function createProductCard(productId, product) {
     <div class="product-card" data-product-id="${productId}">
       ${totalQtyForProduct > 0 ? `
   <div class="product-quantity-indicator">
-  <img src="/bread.svg" class="bread-base">
-  <div class="steam-anim">
-    <img src="/steam-1.svg" class="steam-frame active">
-    <img src="/steam-2.svg" class="steam-frame">
-    <img src="/steam-3.svg" class="steam-frame">
-    <img src="/steam-4.svg" class="steam-frame">
-    <img src="/steam-5.svg" class="steam-frame">
-    <img src="/steam-6.svg" class="steam-frame">
+  <div class="bread-anim">
+    <img src="/bread-steam-1.svg" class="bread-frame active">
+    <img src="/bread-steam-2.svg" class="bread-frame">
+    <img src="/bread-steam-3.svg" class="bread-frame">
+    <img src="/bread-steam-4.svg" class="bread-frame">
+    <img src="/bread-steam-5.svg" class="bread-frame">
+    <img src="/bread-steam-6.svg" class="bread-frame">
   </div>
-  <span class="product-quantity-count">3</span>
+  <span class="product-quantity-count">${totalQtyForProduct}</span>
 </div>
 
 ` : ''}
