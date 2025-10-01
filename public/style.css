@@ -468,7 +468,7 @@ body {
 }
 
 #productModal .cart-indicator {
-  position: fixed;
+  position: absolute;
   bottom: 20px;
   right: 20px;
   z-index: 2000; /* выше модалки */
@@ -479,13 +479,14 @@ body {
    5. КОРЗИНА
 ================================*/
 .cart-indicator {
-  position: fixed;
-  bottom: 20px; right: 20px;
-  width: 56px; height: 56px;
-  display: none;
-  align-items: center; justify-content: center;
-  cursor: pointer;
-  z-index: 1000;
+    position: fixed;
+    bottom: 20px; right: 20px;
+    width: 56px; height: 56px;
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: bottom 0.3s ease
 }
 .cart-indicator.visible { display: flex; }
 .cart-indicator:hover { transform: scale(1.05); }

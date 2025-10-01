@@ -247,66 +247,65 @@ function openProductModal(productId) {
 
   const modalHTML = `
     <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title">${product.name}</div>
-      <button class="close-modal" onclick="closeProductModal()">×</button>
-    </div>
-    <div class="modal-image-slider">
-      ${(product.images || ['/placeholder.jpg']).map((src, i) => `
-        <div class="slide ${i === 0 ? 'active' : ''}">
-          <img src="${src}" alt="${product.name}">
+        <div class="modal-header">
+          <div class="modal-title">${product.name}</div>
+          <button class="close-modal" onclick="closeProductModal()">×</button>
         </div>
-      `).join('')}
-    </div>
-    <div class="detail-item prep-time">
-      <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
-    </div>
-    <div class="detail-item ingredients">
-      <span class="detail-label">Состав:</span> ${product.ingredients || 'Не указан'}
-    </div>
-      <div class="weight-section">
-        <div class="section-title">Выберите вес и количество:</div>
-        <div class="weight-row-container">
-          ${availableWeights.map(({weight, price}) => {
-            const currentQty = quantities[productId][weight] || 0;
-            return `
-              <div class="weight-row">
-                <div class="weight-info">
-                  <span class="weight-label">${weight}г</span>
-                  <span class="weight-price">${price}₽</span>
-                </div>
-                <div class="quantity-controls">
-                  <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">◀</button>
-                  <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                  <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">▶</button>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-      <div class="modal-summary">
-          <div class="summary-item">
-            <span>${product.name}:</span>
-            <span id="totalItems">0 шт</span>
-          </div>
-          <div class="summary-totals">
-            <div class="summary-item total">
-              <span>🍞</span>
-              <span id="modalTotal">0₽</span>
+        <div class="modal-image-slider">
+            ${(product.images || ['/placeholder.jpg']).map((src, i) => `
+            <div class="slide ${i === 0 ? 'active' : ''}">
+                <img src="${src}" alt="${product.name}">
             </div>
-            <div class="summary-item total-cart">
-              <span>🛒</span>
-              <span id="cartTotal">0₽</span>
-            </div>
-          </div>
+            `).join('')}
         </div>
-      </div>
-      <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
-       <img src="/bag.svg" alt="Корзина" class="cart-icon">
-       <span id="cartCount" class="cart-count">${getTotalItems()}</span>
-      </div>
-
+        <div class="detail-item prep-time">
+            <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
+        </div>
+        <div class="detail-item ingredients">
+            <span class="detail-label">Состав:</span> ${product.ingredients || 'Не указан'}
+        </div>
+        <div class="weight-section">
+            <div class="section-title">Выберите вес и количество:</div>
+            <div class="weight-row-container">
+                 ${availableWeights.map(({weight, price}) => {
+                const currentQty = quantities[productId][weight] || 0;
+                return `
+                <div class="weight-row">
+                    <div class="weight-info">
+                        <span class="weight-label">${weight}г</span>
+                        <span class="weight-price">${price}₽</span>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">◀</button>
+                        <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                        <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">▶</button>
+                    </div>
+                </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+        <div class="modal-summary">
+            <div class="summary-item">
+                <span>${product.name}:</span>
+                <span id="totalItems">0 шт</span>
+            </div>
+            <div class="summary-totals">
+                <div class="summary-item total">
+                    <span>🍞</span>
+                    <span id="modalTotal">0₽</span>
+                </div>
+                <div class="summary-item total-cart">
+                    <span>🛒</span>
+                    <span id="cartTotal">0₽</span>
+                </div>
+            </div>
+        </div>
+        <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
+            <img src="/bag.svg" alt="Корзина" class="cart-icon">
+            <span id="modalCartCount" class="cart-count">0</span>
+        </div>
+    </div>
   `;
 
   document.getElementById('productModal').innerHTML = modalHTML;
@@ -467,7 +466,24 @@ function updateCartIndicator() {
     countElement.textContent = totalItems;
     indicator.classList.toggle('visible', totalItems > 0);
   }
+  updateModalCartIndicator();
 }
+
+function updateModalCartIndicator() {
+  const countElem = document.getElementById('modalCartCount');
+  const indicator = document.getElementById('modalCartIndicator');
+  if (!countElem || !indicator) return;
+
+  const totalItems = getTotalItems();
+  countElem.textContent = totalItems;
+
+  if (totalItems > 0) {
+    indicator.style.display = 'flex';
+  } else {
+    indicator.style.display = 'none';
+  }
+}
+
 
 function getTotalItems() {
   return cart.length;
@@ -676,4 +692,16 @@ document.getElementById('checkoutBtn')?.addEventListener('click', () => {
   showNotification('Оформляем заказ...', 'success');
   const data = { action: 'checkout', cart: cart, total: getTotalPrice(), totalItems: getTotalItems() };
   Telegram.WebApp.sendData(JSON.stringify(data));
+});
+
+window.addEventListener("scroll", () => {
+  const cartIndicator = document.getElementById("cartIndicator");
+  if (!cartIndicator) return;
+
+  const lastBtn = document.querySelector(".add-to-cart-btn:last-of-type");
+  if (lastBtn) {
+    const rect = lastBtn.getBoundingClientRect();
+    const overlap = rect.top < window.innerHeight && rect.bottom > window.innerHeight - 80;
+    cartIndicator.style.bottom = overlap ? "100px" : "20px";
+  }
 });
