@@ -480,7 +480,7 @@ body {
 /* число поверх пакета */
 .cart-count {
   position: absolute;
-  top: -6px; right: -6px;
+  top: -16px; right: -6px;
   min-width: 20px;
   height: 20px;
   background: var(--primary);
