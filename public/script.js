@@ -230,6 +230,9 @@ function openProductModal(productId) {
 
   if (!quantities[productId]) quantities[productId] = {};
 
+  const catalogCart = document.getElementById("cartIndicator");
+  if (catalogCart) catalogCart.style.display = "none";
+
   const availableWeights = getAvailableWeights(product);
 
   availableWeights.forEach(({weight}) => {
@@ -431,6 +434,12 @@ function addToCart(productId) {
 function closeProductModal() {
   document.getElementById('productModal').style.display = 'none';
   currentProduct = null;
+
+  // Показать корзину каталога обратно, если есть товары
+  const catalogCart = document.getElementById("cartIndicator");
+  if (catalogCart && getTotalItems() > 0) {
+    catalogCart.style.display = "flex";
+  }
 }
 
 function getAvailableWeights(product) {
