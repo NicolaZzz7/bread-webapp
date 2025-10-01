@@ -539,7 +539,7 @@ function animateSteam() {
     if (frames.length === 0) return;
 
     let idx = 0;
-    const interval = 1200; // ms между сменами — подбери 700..1200
+    const interval = 1400; // ms между сменами — подбери 700..1200
     setInterval(() => {
       const prev = frames[idx];
       prev.classList.remove('active');

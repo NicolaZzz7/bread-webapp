@@ -206,7 +206,7 @@ body {
   height: 100%;
   object-fit: contain;
   opacity: 0;
-  transition: opacity 0.9s ease; /* cross-fade */
+  transition: opacity 1.1s ease; /* cross-fade */
 }
 
 /* активный кадр видим */
