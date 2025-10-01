@@ -34,6 +34,10 @@ export default async (req, res) => {
     const catalog = {};
     for (let i = 1; i < rows.length; i++) {
       const [id, name, ingredients, price_100, price_500, price_750, addons, prep_time] = rows[i];
+      const headers = rows[0]; // первая строка = заголовки
+      const addonsLabel = headers[6]; // в GSheet "Добавки (семена льна, ...)" — это 7-й столбец
+
+
       const breadId = id.toLowerCase().replace(' ', '_');
       catalog[breadId] = {
         name: name || 'Без названия',
@@ -43,7 +47,8 @@ export default async (req, res) => {
           '500': price_500 ? parseInt(price_500) : 0,
           '750': price_750 ? parseInt(price_750) : 0,
         },
-        addons: addons || '',
+        addons: addons ? parseInt(addons) : 0,
+        addons_label: addonsLabel || 'Добавки',
         prep_time: prep_time || '',
           images: [
             `/png/${breadId}/001.webp`,

@@ -49,6 +49,21 @@ function renderProducts(productsToRender) {
   grid.innerHTML = Object.entries(productsToRender).map(([productId, product]) =>
     createProductCard(productId, product)
   ).join('');
+
+  function initCatalogSliders() {
+  document.querySelectorAll('.product-image-slider').forEach(slider => {
+    const slides = slider.querySelectorAll('.slide');
+    let current = 0;
+    if (slides.length > 1) {
+      setInterval(() => {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+      }, 6000);
+    }
+  });
+}
+    initCatalogSliders()
   animateSteam();
 }
 
@@ -104,8 +119,14 @@ function createProductCard(productId, product) {
 
 
       <div class="product-image" onclick="openProductModal('${productId}')">
-        <img src="${(product.images && product.images[0]) || '/placeholder.jpg'}" alt="${product.name}">
+  <div class="product-image-slider">
+    ${(product.images || ['/placeholder.jpg']).map((src, i) => `
+      <div class="slide ${i === 0 ? 'active' : ''}">
+        <img src="${src}" alt="${product.name}">
       </div>
+    `).join('')}
+  </div>
+</div>
 
       <div class="product-info">
         <div class="product-name" onclick="openProductModal('${productId}')">
@@ -332,7 +353,7 @@ function changeWeightQuantity(productId, weight, delta) {
   if (delta > 0) {
     showNotification(`Добавлен ${product.name} (${weight}г)`, "success");
   } else if (delta < 0 && currentQty > 0) {
-    showNotification(`Удалён ${product.name} (${weight}г)`, "success");
+    showNotification(`Удалён ${product.name} (${weight}г)`, "error");
   }
 
   const totalQty = getTotalQtyForProduct(productId);
@@ -589,7 +610,7 @@ function renderCart() {
         <label class="addons-checkbox" style="margin: 10px;">
           <input type="checkbox" id="addon-${item.timestamp}" ${item.hasAddons ? 'checked' : ''} onchange="toggleCartAddon(${item.timestamp}, this.checked)">
           <span class="checkmark"></span>
-          Добавки (+${products[item.id].addons}₽)
+          +${products[item.id].addons}₽ ${products[item.id].addons_label}
         </label>
       ` : ''}
       <button class="remove-btn" onclick="removeCartItem(${item.timestamp})">Удалить</button>
@@ -609,7 +630,7 @@ function removeCartItem(timestamp) {
     saveCart();
     renderCart();
     updateCartIndicator();
-    showNotification(`Удалён ${removedItem.name} (${removedItem.weight}г)`, 'success');
+    showNotification(`Удалён ${removedItem.name} (${removedItem.weight}г)`, 'error');
     if (currentProduct && currentProduct === removedItem.id) {
       quantities[currentProduct][removedItem.weight] = (quantities[currentProduct][removedItem.weight] || 1) - 1;
       document.getElementById(`qty-${currentProduct}-${removedItem.weight}`).textContent = quantities[currentProduct][removedItem.weight];
@@ -629,7 +650,8 @@ function toggleCartAddon(timestamp, checked) {
     saveCart();
     renderCart();
     updateCartIndicator();
-    showNotification(`${checked ? 'Добавлены' : 'Убраны'} добавки для ${item.name} (${item.weight}г)`, 'success');
+    showNotification(`${checked ? 'Добавлены' : 'Убраны'} добавки для ${item.name} (${item.weight}г)`,
+  checked ? 'success' : 'error');
   }
 }
 
