@@ -206,7 +206,7 @@ body {
   height: 100%;
   object-fit: contain;
   opacity: 0;
-  transition: opacity 0.6s ease; /* cross-fade */
+  transition: opacity 0.9s ease; /* cross-fade */
 }
 
 /* активный кадр видим */
@@ -228,6 +228,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+     z-index: 3;
+  padding: 0 5px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   pointer-events: auto; /* если нужно, чтобы было кликабельно — можно убрать */
 }
