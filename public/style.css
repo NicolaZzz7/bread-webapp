@@ -486,7 +486,7 @@ body {
 
 /* Корзина в модалке */
 #modalCartIndicator {
-  position: fixed;   /* а не absolute */
+  position: absolute;   /* а не absolute */
   bottom: 20px;
   right: 20px;
   z-index: 2001;     /* выше модалки */
