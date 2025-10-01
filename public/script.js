@@ -301,10 +301,10 @@ function openProductModal(productId) {
                 </div>
             </div>
         </div>
-        <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
-            <img src="/bag.svg" alt="Корзина" class="cart-icon">
-            <span id="modalCartCount" class="cart-count">0</span>
-        </div>
+    </div>
+    <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
+        <img src="/bag.svg" alt="Корзина" class="cart-icon">
+        <span id="modalCartCount" class="cart-count">0</span>
     </div>
   `;
 
@@ -698,10 +698,21 @@ window.addEventListener("scroll", () => {
   const cartIndicator = document.getElementById("cartIndicator");
   if (!cartIndicator) return;
 
-  const lastBtn = document.querySelector(".add-to-cart-btn:last-of-type");
-  if (lastBtn) {
-    const rect = lastBtn.getBoundingClientRect();
-    const overlap = rect.top < window.innerHeight && rect.bottom > window.innerHeight - 80;
-    cartIndicator.style.bottom = overlap ? "100px" : "20px";
-  }
+  const cartRect = cartIndicator.getBoundingClientRect();
+  const addBtns = document.querySelectorAll(".add-to-cart-btn, .weight-row-container");
+
+  let overlap = false;
+  addBtns.forEach(btn => {
+    const rect = btn.getBoundingClientRect();
+    const verticallyOverlap =
+      rect.top < cartRect.bottom && rect.bottom > cartRect.top;
+    const horizontallyOverlap =
+      rect.left < cartRect.right && rect.right > cartRect.left;
+
+    if (verticallyOverlap && horizontallyOverlap) {
+      overlap = true;
+    }
+  });
+
+  cartIndicator.style.bottom = overlap ? "100px" : "20px";
 });
