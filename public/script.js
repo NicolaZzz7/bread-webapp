@@ -390,9 +390,10 @@ function updateModalSummary(productId) {
 
   const modalCart = document.getElementById('modalCartIndicator');
   if (modalCart) {
-    modalCart.classList.toggle('visible', cart.length > 0);
-    document.getElementById('cartCount').textContent = getTotalItems();
-  }
+  modalCart.classList.toggle('visible', cart.length > 0);
+  const modalCartCount = document.getElementById('modalCartCount');
+  if (modalCartCount) modalCartCount.textContent = getTotalItems();
+}
 }
 
 function updateCartItem(productId, weight, delta) {
