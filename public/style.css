@@ -467,13 +467,6 @@ body {
   color: var(--primary);
 }
 
-#productModal .cart-indicator {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 2000; /* выше модалки */
-}
-
 
 /* ==============================
    5. КОРЗИНА
@@ -491,11 +484,28 @@ body {
 .cart-indicator.visible { display: flex; }
 .cart-indicator:hover { transform: scale(1.05); }
 
-.modal-cart-indicator {
-  position: fixed; /* а не absolute */
+/* Корзина в модалке */
+#modalCartIndicator {
+  position: fixed;   /* а не absolute */
   bottom: 20px;
   right: 20px;
-  z-index: 2001; /* чуть выше самой модалки */
+  z-index: 2001;     /* выше модалки */
+}
+
+#modalCartIndicator img {
+  width: 50px;
+  height: 50px;
+}
+
+#modalCartIndicator .cart-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: green;
+  color: white;
+  font-size: 14px;
+  border-radius: 50%;
+  padding: 2px 6px;
 }
 
 /* сама иконка пакета */
