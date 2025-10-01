@@ -50,7 +50,11 @@ function renderProducts(productsToRender) {
     createProductCard(productId, product)
   ).join('');
 
-  function initCatalogSliders() {
+    initCatalogSliders()
+  animateSteam();
+}
+
+function initCatalogSliders() {
   document.querySelectorAll('.product-image-slider').forEach(slider => {
     const slides = slider.querySelectorAll('.slide');
     let current = 0;
@@ -62,9 +66,6 @@ function renderProducts(productsToRender) {
       }, 6000);
     }
   });
-}
-    initCatalogSliders()
-  animateSteam();
 }
 
 function activateTransitions() {
