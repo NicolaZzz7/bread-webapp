@@ -116,13 +116,6 @@ body {
   flex-direction: column;
   cursor: pointer;
   transition: all 0.3s ease;
-
-.product-card:focus,
-.product-card:focus-within,
-.product-image:focus,
-.product-name:focus {
-  outline: none;  /* Убирает голубую рамку */
-
 }
 .product-card:hover {
   transform: translateY(-2px);
