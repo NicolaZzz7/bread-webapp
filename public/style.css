@@ -91,6 +91,7 @@ body {
   font-size: 32px;
   margin-bottom: 16px;
   animation: bounce 1s infinite;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);  /* Добавь тень для видимости "снаружи" */
 }
 @keyframes bounce {
   0%,100% { transform: translateY(0); }
@@ -515,12 +516,11 @@ body {
 /* Корзина в модалке */
 #modalCartIndicator {
   position: absolute;   /* а не absolute */
-  bottom: -20px;
-  right: -20px;
+  bottom: -40px;
+  right: -40px;
   z-index: 3000;     /* выше модалки */
     width: 56px; height: 56px;
     display: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);  /* Добавь тень для видимости "снаружи" */
   pointer-events: auto;  /* Чтобы клики на пакетик работали */
 }
 
