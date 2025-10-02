@@ -313,9 +313,16 @@ function openProductModal(productId) {
   `;
 
   document.getElementById('productModal').innerHTML = modalHTML;
-  document.getElementById('productModal').style.display = 'block';
+  document.getElementById('productModal').style.display = 'flex';
+  document.getElementById('productModal').focus();
   updateModalSummary(productId);
-document.getElementById('cartIndicator').style.display = 'none';  // Скрыть основной пакетик
+
+  document.getElementById('cartIndicator').style.display = 'none';  // Скрыть основной пакетик
+
+  const modal = document.getElementById('productModal');
+  modal.classList.add('active');  // Вместо style.display = 'flex'
+  modal.focus();  // Перенаправить фокус
+
   updateModalCartIndicator();  // Показать модальный, если корзина не пуста
 
   const slides = document.querySelectorAll('.modal-image-slider .slide');
@@ -436,7 +443,9 @@ function addToCart(productId) {
 }
 
 function closeProductModal() {
-  document.getElementById('productModal').style.display = 'none';
+  const modal = document.getElementById('productModal');
+  modal.classList.remove('active');  // Вместо style.display = 'none'
+    document.getElementById('productModal').style.display = 'none';
   currentProduct = null;
 
   // Показать корзину каталога обратно, если есть товары
