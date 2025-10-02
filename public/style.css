@@ -12,13 +12,14 @@
   --primary-dark: #38a169;
   --error: #e53e3e;
   --error-dark: #c53030;
-  --bg-color: #ffffff;
+  --bg-color: #ffffff; /* темный фон по умолчанию */
   --text-color: #2d3748;
   --card-bg: #ffffff;
   --border-color: #e2e8f0;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
 }
 
+/*светлая тема*/
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-color: #1a202c;
@@ -134,7 +135,7 @@ body {
   object-fit: cover;
     display: block;
 }
-
+/* слайдер в карточке */
 .product-image-slider {
   position: relative;
   width: 100%;
@@ -154,7 +155,7 @@ body {
 .product-image-slider .slide.active {
   opacity: 1;
 }
-
+/* текстовая часть карточки */
 .product-info { flex: 1; }
 .product-name {
   font-size: 18px;
@@ -184,6 +185,7 @@ body {
   gap: 4px;
 }
 
+/* индикатор выбранного хлеба (булочка + пар + счётчик) */
 .product-quantity-indicator {
   position: absolute;
   top: 8px;
@@ -233,7 +235,7 @@ body {
 .product-quantity-indicator .steam-frame.active {
   opacity: 1;
 }
-
+/* счётчик поверх пакета/булки */
 .product-quantity-count {
   position: absolute;
   bottom: 12px;
@@ -385,15 +387,15 @@ body {
   z-index: 1000;
 }
 .modal-content {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+
   background: var(--card-bg);
   border-radius: 20px;
   padding: 24px;
-  width: 90%; max-width: 400px;
+  width: 90%; max-width: 420px;
   max-height: 80vh;
   overflow-y: auto;
+    box-shadow: var(--shadow);
 }
 .modal-header {
   position: relative;
@@ -479,26 +481,20 @@ body {
     align-items: center; justify-content: center;
     cursor: pointer;
     z-index: 1000;
-    transition: bottom 0.3s ease
+    transition: bottom .25s ease, transform .12s ease;
 }
 .cart-indicator.visible { display: flex; }
 .cart-indicator:hover { transform: scale(1.05); }
 
-/* Корзина в модалке */
-#modalCartIndicator {
-  position: absolute;   /* а не absolute */
-  bottom: -10px;
-  right: -10px;
-  z-index: 3000;     /* выше модалки */
-}
-
-#modalCartIndicator img {
+/* сама иконка пакета */
+.cart-icon {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-#modalCartIndicator .cart-count {
+/* число поверх пакета */
+.cart-count {
   position: absolute;
   top: 20px; right: -6px;
   min-width: 20px;
@@ -515,15 +511,24 @@ body {
   padding: 0 5px;
 }
 
-/* сама иконка пакета */
-.cart-icon {
+/* Корзина в модалке */
+#modalCartIndicator {
+  position: absolute;   /* а не absolute */
+  bottom: -10px;
+  right: -10px;
+  z-index: 3000;
+    display: none;        /* видимость контролируется скриптом (visible / display:flex) */
+  align-items: center; justify-content: center;
+  cursor: pointer;/* выше модалки */
+}
+#modalCartIndicator.visible { display: flex; }
+#modalCartIndicator img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-/* число поверх пакета */
-.cart-count {
+#modalCartIndicator .cart-count {
   position: absolute;
   top: 20px; right: -6px;
   min-width: 20px;
