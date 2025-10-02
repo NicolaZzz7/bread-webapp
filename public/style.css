@@ -1,42 +1,38 @@
 /* ==============================
-   1. БАЗА
+   1. БАЗА (переменные и ресет)
 ================================*/
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; } /* сброс отступов */
 
-:root {
-  --primary: #48bb78;
-  --primary-dark: #38a169;
-  --error: #e53e3e;
-  --error-dark: #c53030;
-  --bg-color: #ffffff;
-  --text-color: #2d3748;
-  --card-bg: #ffffff;
-  --border-color: #e2e8f0;
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+:root { /* глобальные переменные для тем */
+  --primary: #48bb78;            /* зелёный основной */
+  --primary-dark: #38a169;       /* зелёный при hover */
+  --error: #e53e3e;              /* красный ошибки */
+  --error-dark: #c53030;         /* красный hover */
+  --bg-color: #ffffff;           /* фон */
+  --text-color: #2d3748;         /* цвет текста */
+  --card-bg: #ffffff;            /* фон карточек/модалок */
+  --border-color: #e2e8f0;       /* цвет бордеров */
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.1); /* тень */
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root { /* тёмная тема */
     --bg-color: #1a202c;
     --text-color: #e2e8f0;
     --card-bg: #2d3748;
     --border-color: #4a5568;
-    --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    --shadow: 0 2px 12px rgba(0,0,0,0.3);
   }
 }
 
-body {
+body { /* всё тело страницы */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg-color);
   color: var(--text-color);
   line-height: 1.6;
 }
 
-.container {
+.container { /* основной контейнер страницы */
   max-width: 100%;
   padding: 16px;
 }
@@ -44,24 +40,16 @@ body {
 /* ==============================
    2. ОБЩИЕ ЭЛЕМЕНТЫ
 ================================*/
-.header {
+.header { /* шапка */
   text-align: center;
   margin-bottom: 24px;
   padding: 20px 0;
 }
-.header h1 {
-  font-size: 28px;
-  margin-bottom: 8px;
-}
-.header p {
-  color: #718096;
-  font-size: 16px;
-}
+.header h1 { font-size: 28px; margin-bottom: 8px; } /* заголовок */
+.header p { color: #718096; font-size: 16px; } /* подзаголовок */
 
-.search-box {
-  margin-bottom: 20px;
-}
-.search-box input {
+.search-box { margin-bottom: 20px; } /* блок поиска */
+.search-box input { /* поле поиска */
   width: 100%;
   padding: 14px 16px;
   border: 2px solid var(--border-color);
@@ -71,27 +59,15 @@ body {
   color: var(--text-color);
   transition: border-color 0.3s;
 }
-.search-box input:focus {
-  outline: none;
-  border-color: var(--primary);
-}
+.search-box input:focus { border-color: var(--primary); } /* активное поле */
 
-.empty-state,
-.loading {
-  text-align: center;
-  padding: 40px 20px;
-  color: #718096;
-}
-.empty-state .icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-}
-.loading .spinner {
-  font-size: 32px;
-  margin-bottom: 16px;
-  animation: bounce 1s infinite;
-}
-@keyframes bounce {
+.empty-state { /* заглушка пустого каталога */ }
+.loading { /* индикатор загрузки */ }
+
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; } /* иконка пустого */
+.loading .spinner { font-size: 32px; margin-bottom: 16px; animation: bounce 1s infinite; }
+
+@keyframes bounce { /* анимация спиннера */
   0%,100% { transform: translateY(0); }
   50% { transform: translateY(-5px); }
 }
@@ -99,11 +75,12 @@ body {
 /* ==============================
    3. КАТАЛОГ
 ================================*/
-.product-grid {
+.product-grid { /* сетка товаров */
   display: grid;
   gap: 16px;
 }
-.product-card {
+
+.product-card { /* карточка товара */
   background: var(--card-bg);
   border-radius: 16px;
   padding: 20px;
@@ -115,499 +92,103 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-.product-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
+.product-card:hover { transform: translateY(-2px); }
 
-.product-image {
+.product-image { /* контейнер картинки */
   width: 100%;
-  aspect-ratio: 800 / 464; /* или 16 / 9 */
+  aspect-ratio: 800 / 464;
   margin-bottom: 12px;
   border-radius: 12px;
   overflow: hidden;
-  background: var(--card-bg); /* чтобы фон не прыгал */
+  background: var(--card-bg);
 }
-.product-image img {
-  width: 100%;
-  height: 100%;
+.product-image img { /* сама картинка */
+  width: 100%; height: 100%;
   object-fit: cover;
-    display: block;
+  display: block;
 }
 
-.product-image-slider {
-  position: relative;
-  width: 100%;
-  height: 100%; /* подгони под размер карточек */
-  overflow: hidden;
-}
+.product-image-slider { position: relative; width: 100%; height: 100%; overflow: hidden; } /* слайдер в карточке */
+.product-image-slider .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1s; } /* кадр */
+.product-image-slider .slide.active { opacity: 1; } /* активный кадр */
 
-.product-image-slider .slide {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-}
+.product-info { flex: 1; } /* инфо о продукте */
+.product-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; cursor: pointer; } /* название */
+.product-ingredients { font-size: 14px; color: #718096; margin-bottom: 12px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } /* состав */
+.product-meta { display: flex; gap: 12px; font-size: 13px; color: #718096; } /* блок метаданных */
+.meta-item { display: flex; align-items: center; gap: 4px; } /* элемент меты */
 
-.product-image-slider .slide.active {
-  opacity: 1;
-}
+/* Индикатор количества товара на карточке */
+.product-quantity-indicator { position: absolute; top: 8px; right: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 10; }
+.product-quantity-indicator .bread-base { position: absolute; width: 100%; height: 100%; object-fit: contain; z-index: 1; pointer-events: none; } /* иконка хлеба */
+.product-quantity-indicator .steam-anim { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; } /* пар */
+.product-quantity-indicator .steam-frame { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 3s ease; } /* кадр пара */
+.product-quantity-indicator .steam-frame.active { opacity: 1; } /* активный кадр */
+.product-quantity-count { position: absolute; bottom: 12px; right: -8px; min-width: 18px; height: 18px; background: var(--primary); color: #fff; border-radius: 50%; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; z-index: 3; padding: 0 5px; }
 
-.product-info { flex: 1; }
-.product-name {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 4px;
-  cursor: pointer;
-}
-.product-ingredients {
-  font-size: 14px;
-  color: #718096;
-  margin-bottom: 12px;
-  line-height: 1.4;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  display: -webkit-box;
-  overflow: hidden;
-}
-.product-meta {
-  display: flex;
-  gap: 12px;
-  font-size: 13px;
-  color: #718096;
-}
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
+/* Блок выбора веса */
+.weight-row-container { display: flex; flex-direction: row; gap: 8px; width: 100%; } /* контейнер строк */
+.weight-row { flex: 1 1 50%; max-width: calc(50% - 4px); display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; height: 56px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-color); } /* одна строка */
+.weight-info { display: flex; gap: 8px; } /* инфо о весе */
+.weight-label, .weight-price { font-size: 14px; font-weight: 600; } /* надпись веса */
+.weight-price { color: var(--primary); } /* цена зелёным */
 
-.product-quantity-indicator {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 40px;      /* размер индикатора — подбери 36-48px на taste */
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none; /* чтобы индикатор не перехватывал клики карточки */
-  z-index: 10;
-}
+/* +/- кнопки */
+.quantity-controls { display: flex; align-items: center; } /* контейнер кнопок */
+.quantity-btn { border: none; background: none; color: var(--primary); font-size: 18px; font-weight: 700; cursor: pointer; padding: 0 6px; } /* кнопка */
+.quantity-value { font-size: 14px; font-weight: 600; min-width: 16px; text-align: center; } /* значение */
 
-/* статичная основа хлеба (не будет меняться) */
-.product-quantity-indicator .bread-base {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 1;
-  pointer-events: none;
-}
+/* Плавное переключение кнопки "В корзину" ↔ контролы */
+.transition-container { position: relative; width: 100%; min-height: 56px; margin-top: 12px; }
+.transition-container > * { position: absolute; top: 0; left: 0; width: 100%; height: 56px; transition: opacity .3s, transform .3s; }
+.transition-container > *.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.transition-container > *.hidden { opacity: 0; pointer-events: none; }
 
-/* контейнер анимации пара */
-.product-quantity-indicator .steam-anim {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* кадры пара - наложены друг на друга */
-.product-quantity-indicator .steam-frame {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  opacity: 0;
-  transition: opacity 3s ease; /* cross-fade */
-}
-
-/* активный кадр видим */
-.product-quantity-indicator .steam-frame.active {
-  opacity: 1;
-}
-
-.product-quantity-count {
-  position: absolute;
-  bottom: 12px;
-  right: -8px;
-  min-width: 18px;
-  height: 18px;
-  background: var(--primary);
-  color: #fff;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-     z-index: 3;
-  padding: 0 5px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  pointer-events: auto; /* если нужно, чтобы было кликабельно — можно убрать */
-}
-
-/* контролы веса */
-.weight-row-container {
-  display: flex;
-  flex-direction: row;
-  gap: 8px; /* меньше расстояние между блоками */
-  width: 100%;
-}
-.weight-row {
-  flex: 1 1 50%;
-  max-width: calc(50% - 4px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 6px 10px; /* компактнее */
-  height: 56px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-color);
-  box-sizing: border-box;
-}
-.weight-info {
-  display: flex;
-  gap: 8px;
-}
-/* Текст */
-.weight-label, .weight-price {
-  font-size: 14px;
-  font-weight: 600;
-}
-.weight-price { color: var(--primary); }
-
-/* Контролы количества */
-.quantity-controls {
-  display: flex;
-  align-items: center;
-
-}
-.quantity-btn {
-  border: none;
-  background: none;
-  color: var(--primary);
-  font-size: 18px; /* стрелочки покрупнее */
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0 6px; /* убираем огромный круг */
-    line-height: 1;
-}
-
-.quantity-value {
-  font-size: 14px;
-  font-weight: 600;
-  min-width: 16px;
-  text-align: center;
-}
-
-/* переключатель кнопка <-> контролы */
-.transition-container {
-  position: relative;
-  width: 100%;
-  min-height: 56px;
-  margin-top: 12px;
-}
-.transition-container > * {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 56px;
-  transition: opacity .3s ease, transform .3s ease;
-}
-.transition-container > *.visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-.transition-container > *.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-.transition-container > .add-to-cart-btn.hidden {
-  transform: translateY(20px);
-}
-.transition-container > .weight-row-container.hidden {
-  transform: scale(0.95);
-}
-
-/* кнопки */
-.add-to-cart-btn {
-  width: 100%;
-  height: 56px;
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-}
+/* Кнопки */
+.add-to-cart-btn { width: 100%; height: 56px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 .add-to-cart-btn:hover { background: var(--primary-dark); }
-.add-to-cart-btn:disabled {
-  background: #a0aec0;
-  cursor: not-allowed;
-}
-.add-to-cart-btn.button-highlight {
-  background: #4caf50 !important;
-  transform: scale(1.05);
-}
-.add-button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 8px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  background: var(--border-color);
-  color: var(--text-color);
-  cursor: pointer;
-}
-.add-button:hover { background: #cbd5e0; }
+.add-to-cart-btn:disabled { background: #a0aec0; cursor: not-allowed; }
+.add-to-cart-btn.button-highlight { background: #4caf50 !important; transform: scale(1.05); }
 
 /* ==============================
    4. МОДАЛКА
 ================================*/
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 1000;
-}
-.modal-content {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--card-bg);
-  border-radius: 20px;
-  padding: 24px;
-  width: 90%; max-width: 400px;
-  max-height: 80vh;
-  overflow-y: auto;
-}
-.modal-header {
-  position: relative;
-  text-align: center;
-  margin-bottom: 20px;
-}
-.modal-title { font-size: 20px; font-weight: 600; }
-.close-modal {
-  position: absolute;
-  top: -5px; right: 0;
-  font-size: 24px;
-  border: none; background: none;
-  color: var(--text-color);
-  cursor: pointer;
-}
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none; } /* фон модалки */
+.modal-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); border-radius: 20px; padding: 24px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; } /* тело модалки */
 
-.modal-image-slider {
-  position: relative;
-  width: 100%; height: 200px;
-  margin-bottom: 16px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
-}
-.modal-image-slider img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-.modal-image-slider .slide {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  opacity: 0;
-  transition: opacity .5s ease;
-}
+.modal-header { position: relative; text-align: center; margin-bottom: 20px; } /* заголовок */
+.modal-title { font-size: 20px; font-weight: 600; } /* текст заголовка */
+.close-modal { position: absolute; top: -5px; right: 0; font-size: 24px; background: none; border: none; color: var(--text-color); cursor: pointer; } /* кнопка X */
+
+.modal-image-slider { position: relative; width: 100%; height: 200px; margin-bottom: 16px; border-radius: 16px; overflow: hidden; } /* картинки внутри модалки */
+.modal-image-slider img { width: 100%; height: 100%; object-fit: cover; }
+.modal-image-slider .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .5s; }
 .modal-image-slider .slide.active { opacity: 1; }
 
+/* секция веса */
 .weight-section { margin: 20px 0; }
 .section-title { font-weight: 600; margin-bottom: 12px; text-align: center; }
 
-.modal-summary {
-  margin: 20px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-}
-.summary-totals {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-.summary-item.total,
-.summary-item.total-cart {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-    gap: 8px;
-  align-items: center;
-  padding: 12px;
-  min-width: 120px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-color);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--primary);
-}
-
+/* блок итогов */
+.modal-summary { margin: 20px 0; display: flex; flex-direction: column; gap: 12px; }
+.summary-item { display: flex; justify-content: space-between; font-size: 14px; }
+.summary-totals { display: flex; gap: 14px; flex-wrap: wrap; }
 
 /* ==============================
    5. КОРЗИНА
 ================================*/
-.cart-indicator {
-    position: fixed;
-    bottom: 20px; right: 20px;
-    width: 56px; height: 56px;
-    display: none;
-    align-items: center; justify-content: center;
-    cursor: pointer;
-    z-index: 1000;
-    transition: bottom 0.3s ease
-}
+.cart-indicator { position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; } /* пакет внизу справа */
 .cart-indicator.visible { display: flex; }
-.cart-indicator:hover { transform: scale(1.05); }
 
-/* Корзина в модалке */
-#modalCartIndicator {
-  position: absolute;   /* а не absolute */
-  bottom: -10px;
-  right: -10px;
-  z-index: 3000;     /* выше модалки */
-}
-
-#modalCartIndicator img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-#modalCartIndicator .cart-count {
-  position: absolute;
-  top: 20px; right: -6px;
-  min-width: 20px;
-  height: 20px;
-  background: var(--primary);
-  color: #fff;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  padding: 0 5px;
-}
-
-/* сама иконка пакета */
-.cart-icon {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-/* число поверх пакета */
-.cart-count {
-  position: absolute;
-  top: 20px; right: -6px;
-  min-width: 20px;
-  height: 20px;
-  background: var(--primary);
-  color: #fff;
-  border-radius: 50%;
-  font-size: 12px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  padding: 0 5px;
-}
-
-.remove-btn {
-  background: var(--error);
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 5px;
-  margin-top: 10px;
-  cursor: pointer;
-}
-.remove-btn:hover { background: var(--error-dark); }
-
-.addons-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 14px;
-  cursor: pointer;
-  margin: 10px;
-}
-.addons-checkbox input { display: none; }
-.checkmark {
-  width: 20px; height: 20px;
-  border: 2px solid var(--primary);
-  border-radius: 4px;
-}
-.addons-checkbox input:checked + .checkmark {
-  background: var(--primary);
-}
-.addons-checkbox input:checked + .checkmark::after {
-  content: '✓';
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-}
+#modalCartIndicator { position: absolute; bottom: -10px; right: -10px; width: 56px; height: 56px; z-index: 3000; } /* пакет внутри модалки */
+#modalCartIndicator img { width: 100%; height: 100%; object-fit: contain; } /* иконка пакета */
+#modalCartIndicator .cart-count { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--primary); color: #fff; font-size: 12px; font-weight: 600; border-radius: 50%; padding: 2px 6px; } /* число на пакете */
 
 /* ==============================
    6. УВЕДОМЛЕНИЯ
 ================================*/
-.notification {
-  position: fixed;
-  top: 20px; left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 24px;
-  border-radius: 8px;
-  color: #fff;
-  opacity: 0;
-  transition: opacity .3s ease;
-  z-index: 10000;
-}
+.notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 8px; color: #fff; opacity: 0; transition: opacity .3s; z-index: 10000; } /* всплывашки */
 .notification.visible { opacity: 1; }
 .notification.success { background: var(--primary); }
 .notification.error { background: var(--error); }
 .notification.info { background: #4a5568; }
-
-/* ==============================
-   7. АДАПТИВ
-================================*/
-@media (max-width: 480px) {
-  .container { padding: 12px; }
-  .header h1 { font-size: 24px; }
-  .product-card { padding: 16px; }
-  .modal-content { width: 95%; padding: 20px; }
-  .weight-row-container {
-    flex-direction: row;
-  }
-  .weight-row {
-    flex: 1 1 50%;
-    max-width: calc(50% - 6px);
-  }
-}
