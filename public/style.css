@@ -387,15 +387,15 @@ body {
   z-index: 1000;
 }
 .modal-content {
-  position: relative;
-
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
   background: var(--card-bg);
   border-radius: 20px;
   padding: 24px;
-  width: 90%; max-width: 420px;
+  width: 90%; max-width: 400px;
   max-height: 80vh;
   overflow-y: auto;
-    box-shadow: var(--shadow);
 }
 .modal-header {
   position: relative;
