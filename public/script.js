@@ -304,11 +304,12 @@ function openProductModal(productId) {
                 </div>
             </div>
         </div>
+        <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
+            <img src="/bag.svg" alt="Корзина" class="cart-icon">
+            <span id="modalCartCount" class="cart-count">0</span>
+        </div>
     </div>
-    <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
-        <img src="/bag.svg" alt="Корзина" class="cart-icon">
-        <span id="modalCartCount" class="cart-count">0</span>
-    </div>
+    
   `;
 
   document.getElementById('productModal').innerHTML = modalHTML;

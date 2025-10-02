@@ -387,7 +387,7 @@ body {
   z-index: 1000;
 }
 .modal-content {
-  position: absolute;
+  position: relative;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   background: var(--card-bg);
@@ -514,9 +514,10 @@ body {
 /* Корзина в модалке */
 #modalCartIndicator {
   position: absolute;   /* а не absolute */
-  bottom: -10px;
-  right: -10px;
+  bottom: -20px;
+  right: -20px;
   z-index: 3000;     /* выше модалки */
+    display: none;
 }
 
 #modalCartIndicator img {
