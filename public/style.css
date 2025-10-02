@@ -395,7 +395,8 @@ body {
   padding: 24px;
   width: 90%; max-width: 400px;
   max-height: 80vh;
-  overflow-y: auto;
+  overflow: visible;
+    z-index: 2000;
 }
 .modal-header {
   position: relative;
@@ -519,6 +520,8 @@ body {
   z-index: 3000;     /* выше модалки */
     width: 56px; height: 56px;
     display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);  /* Добавь тень для видимости "снаружи" */
+  pointer-events: auto;  /* Чтобы клики на пакетик работали */
 }
 
 #modalCartIndicator img {

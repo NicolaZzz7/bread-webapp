@@ -317,6 +317,7 @@ function openProductModal(productId) {
   updateModalSummary(productId);
 document.getElementById('cartIndicator').style.display = 'none';  // Скрыть основной пакетик
   updateModalCartIndicator();  // Показать модальный, если корзина не пуста
+
   const slides = document.querySelectorAll('.modal-image-slider .slide');
     let currentSlide = 0;
     if (slides.length > 1) {
