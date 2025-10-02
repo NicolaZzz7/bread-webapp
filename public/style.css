@@ -386,13 +386,6 @@ body {
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.5);
   z-index: 2000;
-    opacity: 0;  /* Начальное состояние */
-  transition: opacity 0.3s ease;  /* Плавное появление */
-}
-
-.modal.active {
-  display: flex;
-  opacity: 1;  /* Конечное состояние */
 }
 .modal-content {
   position: relative;
@@ -405,16 +398,7 @@ body {
   max-height: 80vh;
   overflow: visible;
     z-index: 2000;
-    transform: translate(-50%, -50%) scale(0.9);  /* Начальное сжатие */
-  transition: transform 0.3s ease, opacity 0.3s ease;  /* Анимация */
-  opacity: 0;
 }
-
-.modal.active .modal-content {
-  transform: translate(-50%, -50%) scale(1);  /* Конечное состояние */
-  opacity: 1;
-}
-
 .modal-header {
   position: relative;
   text-align: center;
