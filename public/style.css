@@ -262,12 +262,14 @@ body {
 .weight-row-container {
   display: flex;
   flex-direction: row;
+    flex-wrap: wrap;
   gap: 8px; /* меньше расстояние между блоками */
   width: 100%;
 }
 .weight-row {
-  flex: 1 1 50%;
+  flex: 1;
   max-width: calc(50% - 4px);
+    min-width: 140px;
   display: flex;
   align-items: center;
   justify-content: space-between;
