@@ -235,98 +235,91 @@ function openProductModal(productId) {
 
   const availableWeights = getAvailableWeights(product);
 
+  // ограничиваем состав
+  let ingredients = product.ingredients || 'Не указан';
+  if (ingredients.length > 120) {
+    ingredients = ingredients.slice(0, 120) + '...';
+  }
+
   availableWeights.forEach(({weight}) => {
     const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
     quantities[productId][weight] = matchingItems.length;
   });
 
-  // Преобразуем ингредиенты в список с капитализацией
-  const ingredientsList = product.ingredients && product.ingredients !== 'Не указан'
-    ? product.ingredients.split(',').map(item => {
-        const trimmed = item.trim();
-        return `<li>${trimmed.charAt(0).toUpperCase() + trimmed.slice(1)}</li>`;
-      }).join('')
-    : '<li>Не указан</li>';
-
   const modalHTML = `
     <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title">${product.name}</div>
-          <button class="close-modal" onclick="closeProductModal()">×</button>
-        </div>
-        <div class="modal-image-slider">
-            ${(product.images || ['/placeholder.jpg']).map((src, i) => `
-            <div class="slide ${i === 0 ? 'active' : ''}">
-                <img src="${src}" alt="${product.name}">
-            </div>
-            `).join('')}
-        </div>
-        <div class="detail-item prep-time">
-            <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
-        </div>
-        <div class="detail-item ingredients">
-            <span class="detail-label">Состав:</span> ${product.ingredients || 'Не указан'}
-        </div>
-        <div class="weight-section">
-            <div class="section-title">Выберите вес и количество:</div>
-            <div class="weight-row-container">
-                 ${availableWeights.map(({weight, price}) => {
-                const currentQty = quantities[productId][weight] || 0;
-                return `
-                <div class="weight-row">
-                    <div class="weight-info">
-                        <span class="weight-label">${weight}г</span>
-                        <span class="weight-price">${price}₽</span>
-                    </div>
-                    <div class="quantity-controls">
-                        <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">◀</button>
-                        <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                        <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">▶</button>
-                    </div>
+      <div class="modal-header">
+        <div class="modal-title">${product.name}</div>
+        <button class="close-modal" onclick="closeProductModal()">×</button>
+      </div>
+
+      <div class="modal-image-slider">
+        ${(product.images || ['/placeholder.jpg']).map((src, i) => `
+          <div class="slide ${i === 0 ? 'active' : ''}">
+            <img src="${src}" alt="${product.name}">
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="detail-item ingredients">
+        <span class="detail-label">Состав:</span> ${ingredients}
+      </div>
+
+      <div class="weight-section">
+        <div class="section-title">Выберите вес и количество:</div>
+        ${availableWeights.map(({weight, price}) => {
+          const currentQty = quantities[productId][weight] || 0;
+          const totalForThis = price * currentQty;
+          return `
+            <div class="weight-row two-cols">
+              <div class="weight-left">
+                🍞 ${weight}г — <span id="total-${productId}-${weight}">${totalForThis}₽</span>
+              </div>
+              <div class="weight-right">
+                <span class="weight-price">${price}₽</span>
+                <div class="quantity-controls">
+                  <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">◀</button>
+                  <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                  <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">▶</button>
                 </div>
-                    `;
-                }).join('')}
+              </div>
             </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div class="modal-summary-row">
+        <div class="prep-time">⏰ ${product.prep_time || '1-2 дня'}</div>
+        <div class="cart-total">
+          🛒 <span id="cartTotal">${getTotalPrice()}₽</span>
         </div>
-        <div class="modal-summary">
-            <div class="summary-item">
-                <span>${product.name}:</span>
-                <span id="totalItems">0 шт</span>
-            </div>
-            <div class="summary-totals">
-                <div class="summary-item total">
-                    <span>🍞</span>
-                    <span id="modalTotal">0₽</span>
-                </div>
-                <div class="summary-item total-cart">
-                    <span>🛒</span>
-                    <span id="cartTotal">0₽</span>
-                </div>
-            </div>
-        </div>
-        <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
-            <img src="/bag.svg" alt="Корзина" class="cart-icon">
-            <span id="modalCartCount" class="cart-count">0</span>
-        </div>
+      </div>
+
+      <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
+        <img src="/bag.svg" alt="Корзина" class="cart-icon">
+        <span id="modalCartCount" class="cart-count">0</span>
+      </div>
     </div>
-    
   `;
 
   document.getElementById('productModal').innerHTML = modalHTML;
   document.getElementById('productModal').style.display = 'block';
   updateModalSummary(productId);
-document.getElementById('cartIndicator').style.display = 'none';  // Скрыть основной пакетик
-  updateModalCartIndicator();  // Показать модальный, если корзина не пуста
+
+  document.getElementById('cartIndicator').style.display = 'none';
+  updateModalCartIndicator();
+
   const slides = document.querySelectorAll('.modal-image-slider .slide');
-    let currentSlide = 0;
-    if (slides.length > 1) {
-      setInterval(() => {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-      }, 6000);
-    }
+  let currentSlide = 0;
+  if (slides.length > 1) {
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 6000);
+  }
 }
+
 
 function changeWeightQuantity(productId, weight, delta) {
   const product = products[productId];
