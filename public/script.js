@@ -235,87 +235,92 @@ function openProductModal(productId) {
 
   const availableWeights = getAvailableWeights(product);
 
-  // ограничиваем состав
-  let ingredients = product.ingredients || 'Не указан';
-  if (ingredients.length > 120) {
-    ingredients = ingredients.slice(0, 120) + '...';
-  }
-
   availableWeights.forEach(({weight}) => {
     const matchingItems = cart.filter(item => item.id === productId && item.weight === weight);
     quantities[productId][weight] = matchingItems.length;
   });
 
+  // ограниченный состав
+  let shortIngredients = product.ingredients || "Не указан";
+  if (shortIngredients.length > 120) {
+    shortIngredients = shortIngredients.substring(0, 120).trim() + "...";
+  }
+
   const modalHTML = `
     <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title">${product.name}</div>
-        <button class="close-modal" onclick="closeProductModal()">×</button>
-      </div>
-
-      <div class="modal-image-slider">
-        ${(product.images || ['/placeholder.jpg']).map((src, i) => `
-          <div class="slide ${i === 0 ? 'active' : ''}">
-            <img src="${src}" alt="${product.name}">
-          </div>
-        `).join('')}
-      </div>
-
-      <div class="detail-item ingredients">
-        <span class="detail-label">Состав:</span> ${ingredients}
-      </div>
-
-      <div class="weight-section">
-        <div class="section-title">Выберите вес и количество:</div>
-        ${availableWeights.map(({weight, price}) => {
-          const currentQty = quantities[productId][weight] || 0;
-          const totalForThis = price * currentQty;
-          return `
-            <div class="weight-row two-cols">
-              <div class="weight-left">
-                🍞 ${weight}г — <span id="total-${productId}-${weight}">${totalForThis}₽</span>
-              </div>
-              <div class="weight-right">
-                <span class="weight-price">${price}₽</span>
-                <div class="quantity-controls">
-                  <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">◀</button>
-                  <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
-                  <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">▶</button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-
-      <div class="modal-summary-row">
-        <div class="prep-time">⏰ ${product.prep_time || '1-2 дня'}</div>
-        <div class="cart-total">
-          🛒 <span id="cartTotal">${getTotalPrice()}₽</span>
+        <div class="modal-header">
+          <div class="modal-title">${product.name}</div>
+          <button class="close-modal" onclick="closeProductModal()">×</button>
         </div>
-      </div>
 
-      <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
-        <img src="/bag.svg" alt="Корзина" class="cart-icon">
-        <span id="modalCartCount" class="cart-count">0</span>
-      </div>
+        <!-- Картинка -->
+        <div class="modal-image-slider">
+            ${(product.images || ['/placeholder.jpg']).map((src, i) => `
+            <div class="slide ${i === 0 ? 'active' : ''}">
+                <img src="${src}" alt="${product.name}">
+            </div>
+            `).join('')}
+        </div>
+
+        <!-- Состав -->
+        <div class="detail-item ingredients">
+            <span class="detail-label">Состав:</span> ${shortIngredients}
+        </div>
+
+        <!-- Вес и количество -->
+        <div class="weight-section">
+            <div class="section-title">Выберите вес и количество:</div>
+            ${availableWeights.map(({weight, price}) => {
+              const currentQty = quantities[productId][weight] || 0;
+              const itemTotal = price * currentQty;
+              return `
+                <div class="weight-row dual">
+                  <!-- Левая часть -->
+                  <div class="weight-left">
+                    🍞 ${weight}г — <span id="itemTotal-${productId}-${weight}">${itemTotal}₽</span>
+                  </div>
+                  <!-- Правая часть -->
+                  <div class="weight-right">
+                    <span class="weight-price">${price}₽</span>
+                    <div class="quantity-controls">
+                      <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">◀</button>
+                      <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
+                      <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">▶</button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+        </div>
+
+        <!-- Нижняя строка -->
+        <div class="summary-bottom">
+          <div class="prep-time">⏰ ${product.prep_time || "1-2 дня"}</div>
+          <div class="cart-total">🛒 <span id="cartTotal">0₽</span></div>
+        </div>
+
+        <!-- Индикатор корзины -->
+        <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
+            <img src="/bag.svg" alt="Корзина" class="cart-icon">
+            <span id="modalCartCount" class="cart-count">0</span>
+        </div>
     </div>
   `;
 
-  document.getElementById('productModal').innerHTML = modalHTML;
-  document.getElementById('productModal').style.display = 'block';
-  updateModalSummary(productId);
+  document.getElementById("productModal").innerHTML = modalHTML;
+  document.getElementById("productModal").style.display = "block";
 
-  document.getElementById('cartIndicator').style.display = 'none';
+  updateModalSummary(productId);
+  document.getElementById("cartIndicator").style.display = "none";
   updateModalCartIndicator();
 
-  const slides = document.querySelectorAll('.modal-image-slider .slide');
+  const slides = document.querySelectorAll(".modal-image-slider .slide");
   let currentSlide = 0;
   if (slides.length > 1) {
     setInterval(() => {
-      slides[currentSlide].classList.remove('active');
+      slides[currentSlide].classList.remove("active");
       currentSlide = (currentSlide + 1) % slides.length;
-      slides[currentSlide].classList.add('active');
+      slides[currentSlide].classList.add("active");
     }, 6000);
   }
 }
