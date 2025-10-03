@@ -379,6 +379,10 @@ function updateModalSummary(productId) {
       totalItems += qty;
       totalPrice += price * qty;
     }
+    const positionTotalElem = document.getElementById(`positionTotal-${productId}-${weight}`);
+    if (positionTotalElem) {
+      positionTotalElem.textContent = `${price * qty}₽`;
+    }
   });
 
   document.getElementById('totalItems').textContent = `${totalItems} шт`;
@@ -387,21 +391,10 @@ function updateModalSummary(productId) {
 
   const modalCart = document.getElementById('modalCartIndicator');
   if (modalCart) {
-  modalCart.classList.toggle('visible', cart.length > 0);
-  const modalCartCount = document.getElementById('modalCartCount');
-  if (modalCartCount) modalCartCount.textContent = getTotalItems();
-
-// Новое: обновляем суммы позиций для каждого веса
-  const availableWeights = getAvailableWeights(products[productId]);
-  availableWeights.forEach(({weight, price}) => {
-    const qty = quantities[productId][weight] || 0;
-    const positionTotalElem = document.getElementById(`positionTotal-${productId}-${weight}`);
-    if (positionTotalElem) {
-      positionTotalElem.textContent = `${price * qty}₽`;
-    }
-  });
-
-}
+    modalCart.classList.toggle('visible', cart.length > 0);
+    const modalCartCount = document.getElementById('modalCartCount');
+    if (modalCartCount) modalCartCount.textContent = getTotalItems();
+  }
 }
 
 function updateCartItem(productId, weight, delta) {

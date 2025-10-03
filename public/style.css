@@ -466,8 +466,7 @@ body {
   align-items: center;
   padding: 12px;
   min-width: 120px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
+
   background: var(--bg-color);
   font-weight: 600;
   font-size: 14px;
