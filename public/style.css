@@ -396,7 +396,7 @@ body {
   border-radius: 20px;
   padding: 24px;
   width: 90%; max-width: 400px;
-  max-height: 80vh;
+  max-height: none;
   overflow: visible;
     z-index: 2000;
 }

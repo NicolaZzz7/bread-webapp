@@ -327,7 +327,7 @@ document.getElementById('cartIndicator').style.display = 'none';  // Скрыт�
       }, 6000);
     }
 }
-adjustModalHeight();
+
 function changeWeightQuantity(productId, weight, delta) {
   const product = products[productId];
   if (!quantities[productId]) quantities[productId] = {};
@@ -731,20 +731,3 @@ window.addEventListener("scroll", () => {
   cartIndicator.style.bottom = overlap ? "100px" : "20px";
 });
 
-function adjustModalHeight() {
-  const viewportHeight = Telegram.WebApp.viewportStableHeight || Telegram.WebApp.viewportHeight;
-  const modalContent = document.querySelector('.modal-content');
-  if (modalContent && viewportHeight) {
-    modalContent.style.maxHeight = Math.floor(viewportHeight * 0.8) + 'px';
-  }
-}
-
-// запуск сразу после открытия модалки
-document.addEventListener('DOMContentLoaded', () => {
-  Telegram.WebApp.ready();
-  Telegram.WebApp.expand();
-
-  // обновляем при изменении окна
-  window.addEventListener('resize', adjustModalHeight);
-  Telegram.WebApp.onEvent('viewportChanged', adjustModalHeight);
-});
