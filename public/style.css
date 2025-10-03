@@ -396,8 +396,9 @@ body {
   border-radius: 20px;
   padding: 24px;
   width: 90%; max-width: 400px;
-  
-  overflow: visible;
+  max-height: 80vh;
+  overflow-y: auto;   /* вместо visible */
+  overflow-x: hidden;
     z-index: 2000;
 }
 .modal-header {
@@ -516,8 +517,9 @@ body {
 
 /* Корзина в модалке */
 #modalCartIndicator {
-  position: absolute;   /* а не absolute */
-  bottom: -34px;
+  position: sticky;   /* а не absolute */
+ bottom: 16px;
+  margin-left: auto;
   right: -34px;
   z-index: 3000;     /* выше модалки */
     width: 56px; height: 56px;
