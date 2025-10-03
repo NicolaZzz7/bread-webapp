@@ -471,7 +471,96 @@ body {
   font-size: 14px;
   color: var(--primary);
 }
+.weight-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
 
+.weight-row-pair {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.weight-info-box, .weight-controls-box {
+  flex: 1;
+  padding: 12px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.weight-emoji {
+  margin-right: 8px;
+}
+
+.weight-label, .weight-price {
+  font-size: 16px;
+  color: var(--text-color);
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quantity-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.quantity-btn:hover {
+  background: var(--primary-dark);
+}
+
+.quantity-value {
+  font-size: 16px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.summary-item.prep-time, .summary-item.total-cart {
+  flex: 1;
+  padding: 12px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+}
+
+@media (max-width: 340px) {
+  .weight-row-pair {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .weight-info-box, .weight-controls-box {
+    width: 100%;
+  }
+
+  .summary-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
 
 /* ==============================
    5. КОРЗИНА
