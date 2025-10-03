@@ -447,18 +447,13 @@ body {
   flex-direction: column;
   gap: 12px;
 }
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-}
+
 .summary-totals {
   display: flex;
   gap: 14px;
   flex-wrap: wrap;
 }
-.summary-item.total,
-.summary-item.total-cart {
+.summary-item.total {
   flex: 1;
   display: flex;
   flex-direction: row;
@@ -471,6 +466,36 @@ body {
   font-weight: 600;
   font-size: 14px;
   color: var(--primary);
+}
+
+.summary-item {
+  flex: 1;
+  max-width: calc(50% - 4px);
+    min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px; /* компактнее */
+  height: 56px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  box-sizing: border-box;
+}
+
+.summary-item.total-cart {
+  flex: 1;
+  max-width: calc(50% - 4px);
+    min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px; /* компактнее */
+  height: 56px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  box-sizing: border-box;
 }
 
 
