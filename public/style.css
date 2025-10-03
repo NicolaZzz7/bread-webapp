@@ -462,6 +462,7 @@ body {
   padding: 12px;
   min-width: 120px;
 
+  border: none;
   background: var(--bg-color);
   font-weight: 600;
   font-size: 14px;
