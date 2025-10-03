@@ -454,9 +454,9 @@ body {
 .summary-item.total {
   flex: 2; /* Больше места для левого контейнера (два веса) */
   display: flex;
-  flex-direction: column; /* Изменяем на столбец для веса и суммы */
-  justify-content: space-between; /* Распределяем элементы по высоте */
-  align-items: stretch; /* Растягиваем элементы на всю ширину */
+  flex-direction: row; /* Возвращаем в одну строку */
+  justify-content: space-between; /* Распределяем вес и сумму */
+  align-items: center; /* Выравнивание по центру */
   padding: 12px;
   min-width: 120px;
   border: none; /* Убираем обводку */
@@ -476,7 +476,7 @@ body {
   max-width: calc(50% - 4px);
   min-width: 140px;
   display: flex;
-  flex-direction: column; /* Две строки вместо колонок */
+  flex-direction: column; /* Две строки */
   justify-content: space-between;
   align-items: stretch; /* Растягиваем на всю ширину */
   padding: 6px 10px;
@@ -499,19 +499,19 @@ body {
   max-width: calc(50% - 4px);
   min-width: 140px;
   display: flex;
+  flex-direction: row; /* Возвращаем в одну строку */
   align-items: center;
   justify-content: space-between;
   padding: 6px 10px;
   height: 56px;
   border-radius: 10px;
-  border: 1px solid var(--border-color);
+  border: none; /* Убираем обводку */
   background: var(--bg-color);
   box-sizing: border-box;
 }
 .summary-item.total-cart span:last-child { /* cartTotal */
   color: var(--primary); /* Зелёный цвет */
 }
-
 
 /* ==============================
    5. КОРЗИНА
