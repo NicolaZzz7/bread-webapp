@@ -240,13 +240,11 @@ function openProductModal(productId) {
     quantities[productId][weight] = matchingItems.length;
   });
 
-  // Преобразуем ингредиенты в список с капитализацией
-  const ingredientsList = product.ingredients && product.ingredients !== 'Не указан'
-    ? product.ingredients.split(',').map(item => {
-        const trimmed = item.trim();
-        return `<li>${trimmed.charAt(0).toUpperCase() + trimmed.slice(1)}</li>`;
-      }).join('')
-    : '<li>Не указан</li>';
+  // Ограничение состава до 120 символов
+  let ingredientsText = product.ingredients || 'Не указан';
+  if (ingredientsText.length > 120) {
+    ingredientsText = ingredientsText.slice(0, 117) + '...';
+  }
 
   const modalHTML = `
     <div class="modal-content">
@@ -261,11 +259,8 @@ function openProductModal(productId) {
             </div>
             `).join('')}
         </div>
-        <div class="detail-item prep-time">
-            <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
-        </div>
         <div class="detail-item ingredients">
-            <span class="detail-label">Состав:</span> ${product.ingredients || 'Не указан'}
+            <span class="detail-label">Состав:</span> ${ingredientsText}
         </div>
         <div class="weight-section">
             <div class="section-title">Выберите вес и количество:</div>
@@ -274,11 +269,13 @@ function openProductModal(productId) {
                 const currentQty = quantities[productId][weight] || 0;
                 return `
                 <div class="weight-row">
-                    <div class="weight-info">
+                    <div class="weight-info"> <!-- Левый контейнер: 🍞 + вес + сумма позиции -->
+                        <span>🍞</span>
                         <span class="weight-label">${weight}г</span>
-                        <span class="weight-price">${price}₽</span>
+                        <span id="position-sum-${productId}-${weight}">${currentQty * price}₽</span>
                     </div>
-                    <div class="quantity-controls">
+                    <div class="quantity-controls"> <!-- Правый контейнер: цена + контролы -->
+                        <span class="weight-price">${price}₽</span>
                         <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">◀</button>
                         <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
                         <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">▶</button>
@@ -289,14 +286,10 @@ function openProductModal(productId) {
             </div>
         </div>
         <div class="modal-summary">
-            <div class="summary-item">
-                <span>${product.name}:</span>
-                <span id="totalItems">0 шт</span>
-            </div>
-            <div class="summary-totals">
+            <div class="summary-totals"> <!-- Строка: срок слева + сумма корзины справа -->
                 <div class="summary-item total">
-                    <span>🍞</span>
-                    <span id="modalTotal">0₽</span>
+                    <span class="detail-label">Срок изготовления:</span>
+                    <span>${product.prep_time || '2-3 дня'}</span>
                 </div>
                 <div class="summary-item total-cart">
                     <span>🛒</span>
@@ -309,23 +302,23 @@ function openProductModal(productId) {
             <span id="modalCartCount" class="cart-count">0</span>
         </div>
     </div>
-    
   `;
 
   document.getElementById('productModal').innerHTML = modalHTML;
   document.getElementById('productModal').style.display = 'block';
   updateModalSummary(productId);
-document.getElementById('cartIndicator').style.display = 'none';  // Скрыть основной пакетик
+  updatePositionSums(productId); // Обновляем суммы позиций сразу
+  document.getElementById('cartIndicator').style.display = 'none';  // Скрыть основной пакетик
   updateModalCartIndicator();  // Показать модальный, если корзина не пуста
   const slides = document.querySelectorAll('.modal-image-slider .slide');
-    let currentSlide = 0;
-    if (slides.length > 1) {
-      setInterval(() => {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-      }, 6000);
-    }
+  let currentSlide = 0;
+  if (slides.length > 1) {
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 6000);
+  }
 }
 
 function changeWeightQuantity(productId, weight, delta) {
@@ -367,6 +360,8 @@ function changeWeightQuantity(productId, weight, delta) {
   if (currentProduct === productId) updateModalSummary(productId);
 
   renderProducts(products);
+  updatePositionSums(productId);
+  updateModalSummary(productId); // Уже есть, но на всякий
 }
 
 
@@ -398,6 +393,18 @@ function updateModalSummary(productId) {
 }
 }
 
+
+// Новая функция для обновления сумм позиций
+function updatePositionSums(productId) {
+  const availableWeights = getAvailableWeights(products[productId]);
+  availableWeights.forEach(({weight, price}) => {
+    const qty = quantities[productId][weight] || 0;
+    const positionSumElement = document.getElementById(`position-sum-${productId}-${weight}`);
+    if (positionSumElement) {
+      positionSumElement.textContent = `${qty * price}₽`;
+    }
+  });
+}
 function updateCartItem(productId, weight, delta) {
   const product = products[productId];
   const price = product.prices[weight] || 0;
