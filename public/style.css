@@ -517,10 +517,10 @@ body {
 /* Корзина в модалке */
 #modalCartIndicator {
   position: absolute;   /* а не absolute */
-  bottom: -34px;
-  right: -34px;
+  bottom: -16px;
+  right: -16px;
   z-index: 3000;     /* выше модалки */
-    width: 56px; height: 56px;
+    width: 46px; height: 46px;
     display: none;
   pointer-events: auto;  /* Чтобы клики на пакетик работали */
 }
