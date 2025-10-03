@@ -267,7 +267,7 @@ function openProductModal(productId) {
             <div class="weight-row-container">
                  ${availableWeights.map(({weight, price}) => {
                 const currentQty = quantities[productId][weight] || 0;
-                const positionTotal = price * currentQty; // Сумма за позицию
+                const positionTotal = price * currentQty;
                 return `
                 <div class="weight-row"> <!-- Левый контейнер: иконка + вес + сумма позиции -->
                     <div class="summary-item total">
@@ -289,7 +289,7 @@ function openProductModal(productId) {
                 }).join('')}
             </div>
         </div>
-        <div class="modal-summary"> <!-- Нижний ряд: prep-time слева, сумма корзины справа -->
+        <div class="modal-summary">
             <div class="summary-totals">
                 <div class="summary-item">
                     <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
@@ -309,18 +309,18 @@ function openProductModal(productId) {
 
   document.getElementById('productModal').innerHTML = modalHTML;
   document.getElementById('productModal').style.display = 'block';
-  updateModalSummary(productId);
-  document.getElementById('cartIndicator').style.display = 'none';  // Скрыть основной пакетик
-  updateModalCartIndicator();  // Показать модальный, если корзина не пуста
+  updateModalSummary(productId); // Обновляем суммы сразу
+  updateModalCartIndicator(); // Показываем пакетик, если корзина не пуста
+  document.getElementById('cartIndicator').style.display = 'none'; // Скрываем основной пакетик
   const slides = document.querySelectorAll('.modal-image-slider .slide');
-    let currentSlide = 0;
-    if (slides.length > 1) {
-      setInterval(() => {
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-      }, 6000);
-    }
+  let currentSlide = 0;
+  if (slides.length > 1) {
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 6000);
+  }
 }
 
 function changeWeightQuantity(productId, weight, delta) {
@@ -332,22 +332,17 @@ function changeWeightQuantity(productId, weight, delta) {
 
   updateCartItem(productId, weight, delta);
 
-  // обновляем количество в каталоге
+  // Обновляем количество в каталоге и модалке
   const qtyEl = document.getElementById(`qty-${productId}-${weight}`);
   if (qtyEl) qtyEl.textContent = newQty;
 
-  // обновляем количество в модалке
-  const modalQtyEl = document.querySelector(
-    `#productModal .quantity-value#qty-${productId}-${weight}`
-  );
+  const modalQtyEl = document.querySelector(`#productModal .quantity-value#qty-${productId}-${weight}`);
   if (modalQtyEl) modalQtyEl.textContent = newQty;
 
-  // обновляем модальную корзину
+  // Обновляем модальный пакетик
   const modalCart = document.getElementById("modalCartIndicator");
   if (modalCart) {
-    modalCart.classList.toggle("visible", cart.length > 0);
-    const modalCartCount = modalCart.querySelector("#cartCount");
-    if (modalCartCount) modalCartCount.textContent = getTotalItems();
+    updateModalCartIndicator(); // Переиспользуем существующую функцию
   }
 
   if (delta > 0) {
@@ -359,7 +354,7 @@ function changeWeightQuantity(productId, weight, delta) {
   const totalQty = getTotalQtyForProduct(productId);
   visibleWeightControls[productId] = totalQty > 0;
 
-  if (currentProduct === productId) updateModalSummary(productId);
+  if (currentProduct === productId) updateModalSummary(productId); // Обновляем суммы
 
   renderProducts(products);
 }
@@ -379,16 +374,24 @@ function updateModalSummary(productId) {
       totalItems += qty;
       totalPrice += price * qty;
     }
+    // Обновляем сумму позиции
     const positionTotalElem = document.getElementById(`positionTotal-${productId}-${weight}`);
     if (positionTotalElem) {
       positionTotalElem.textContent = `${price * qty}₽`;
     }
   });
 
-  document.getElementById('totalItems').textContent = `${totalItems} шт`;
-  document.getElementById('modalTotal').textContent = `${totalPrice}₽`;
-  document.getElementById('cartTotal').textContent = `${getTotalPrice()}₽`;
+  // Обновляем общие суммы
+  const totalItemsElem = document.getElementById('totalItems');
+  if (totalItemsElem) totalItemsElem.textContent = `${totalItems} шт`;
 
+  const modalTotalElem = document.getElementById('modalTotal');
+  if (modalTotalElem) modalTotalElem.textContent = `${totalPrice}₽`;
+
+  const cartTotalElem = document.getElementById('cartTotal');
+  if (cartTotalElem) cartTotalElem.textContent = `${getTotalPrice()}₽`;
+
+  // Обновляем пакетик
   const modalCart = document.getElementById('modalCartIndicator');
   if (modalCart) {
     modalCart.classList.toggle('visible', cart.length > 0);
