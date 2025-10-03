@@ -131,20 +131,6 @@ body {
   background: var(--card-bg); /* чтобы фон не прыгал */
 }
 
-.product-image,
-.product-name {
-  -webkit-tap-highlight-color: transparent; /* отключает голубой фон на мобилках */
-  outline: none;
-}
-
-.product-image:focus,
-.product-name:focus,
-.product-image:active,
-.product-name:active {
-  outline: none;
-  background: none;
-}
-
 .product-image img {
   width: 100%;
   height: 100%;
