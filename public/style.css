@@ -262,14 +262,14 @@ body {
 .weight-row-container {
   display: flex;
   flex-direction: row;
-    flex-wrap: wrap;
+  flex-wrap: wrap;
   gap: 8px; /* меньше расстояние между блоками */
   width: 100%;
 }
 .weight-row {
   flex: 1;
   max-width: calc(50% - 4px);
-    min-width: 140px;
+  min-width: 140px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -282,9 +282,8 @@ body {
 }
 .weight-info {
   display: flex;
-  gap: 8px;
+  gap: 4px; /* Уменьшаем расстояние между weight-price и quantity-controls */
 }
-/* Текст */
 .weight-label, .weight-price {
   font-size: 14px;
   font-weight: 600;
@@ -295,19 +294,18 @@ body {
 .quantity-controls {
   display: flex;
   align-items: center;
-
+  gap: 4px; /* Сблизить элементы */
 }
 .quantity-btn {
   border: none;
   background: none;
   color: var(--primary);
-  font-size: 18px; /* стрелочки покрупнее */
+  font-size: 20px; /* Увеличиваем размер кнопок */
   font-weight: 700;
   cursor: pointer;
-  padding: 0 6px; /* убираем огромный круг */
-    line-height: 1;
+  padding: 0 8px; /* Немного больше места вокруг стрелочек */
+  line-height: 1;
 }
-
 .quantity-value {
   font-size: 14px;
   font-weight: 600;
@@ -454,49 +452,64 @@ body {
   flex-wrap: wrap;
 }
 .summary-item.total {
-  flex: 1;
+  flex: 2; /* Больше места для левого контейнера (два веса) */
   display: flex;
-  flex-direction: row;
-    gap: 8px;
-  align-items: center;
+  flex-direction: column; /* Изменяем на столбец для веса и суммы */
+  justify-content: space-between; /* Распределяем элементы по высоте */
+  align-items: stretch; /* Растягиваем элементы на всю ширину */
   padding: 12px;
   min-width: 120px;
-
-  border: none;
+  border: none; /* Убираем обводку */
   background: var(--bg-color);
   font-weight: 600;
   font-size: 14px;
-  color: var(--primary);
+}
+.summary-item.total span:first-child { /* Вес (например, "🍞 500г") */
+  color: #fff; /* Белый цвет для веса */
+}
+.summary-item.total span:last-child { /* positionTotal (сумма) */
+  color: var(--primary); /* Зелёный цвет для суммы */
 }
 
 .summary-item {
-  flex: 1;
+  flex: 3; /* Больше места для "Срок изготовления" */
   max-width: calc(50% - 4px);
-    min-width: 140px;
+  min-width: 140px;
   display: flex;
-  align-items: center;
+  flex-direction: column; /* Две строки вместо колонок */
   justify-content: space-between;
-  padding: 6px 10px; /* компактнее */
+  align-items: stretch; /* Растягиваем на всю ширину */
+  padding: 6px 10px;
   height: 56px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
   box-sizing: border-box;
 }
+.summary-item span:first-child { /* "Срок изготовления" */
+  font-weight: 600;
+  color: var(--text-color);
+}
+.summary-item span:last-child { /* product.prep_time */
+  color: var(--primary); /* Зелёный цвет */
+}
 
 .summary-item.total-cart {
-  flex: 1;
+  flex: 1; /* Меньше места для корзины */
   max-width: calc(50% - 4px);
-    min-width: 140px;
+  min-width: 140px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px; /* компактнее */
+  padding: 6px 10px;
   height: 56px;
   border-radius: 10px;
   border: 1px solid var(--border-color);
   background: var(--bg-color);
   box-sizing: border-box;
+}
+.summary-item.total-cart span:last-child { /* cartTotal */
+  color: var(--primary); /* Зелёный цвет */
 }
 
 
