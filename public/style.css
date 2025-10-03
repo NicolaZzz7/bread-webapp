@@ -186,7 +186,9 @@ body {
   align-items: center;
   gap: 4px;
 }
-
+.product-info .meta-item {
+  margin-left: 8px;
+}
 /* индикатор выбранного хлеба (булочка + пар + счётчик) */
 .product-quantity-indicator {
   position: absolute;
@@ -261,7 +263,7 @@ body {
 /* контролы веса */
 .weight-row-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 8px; /* меньше расстояние между блоками */
   width: 100%;
 }
@@ -278,8 +280,10 @@ body {
   background: var(--bg-color);
   box-sizing: border-box;
 }
-.weight-info {
+.weight-info,
+.quantity-controls {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 /* Текст */
@@ -290,11 +294,7 @@ body {
 .weight-price { color: var(--primary); }
 
 /* Контролы количества */
-.quantity-controls {
-  display: flex;
-  align-items: center;
 
-}
 .quantity-btn {
   border: none;
   background: none;
@@ -614,10 +614,19 @@ body {
   .product-card { padding: 16px; }
   .modal-content { width: 95%; padding: 20px; }
   .weight-row-container {
-    flex-direction: row;
+    display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   }
   .weight-row {
-    flex: 1 1 50%;
-    max-width: calc(50% - 6px);
+    flex: 1;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   }
 }

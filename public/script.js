@@ -240,12 +240,12 @@ function openProductModal(productId) {
     quantities[productId][weight] = matchingItems.length;
   });
 
-  // Ограничение состава 120 символами с ...
-  const maxLength = 120;
+  // Ограничение состава до 120 символов
   const ingredients = product.ingredients || 'Не указан';
-  const truncatedIngredients = ingredients.length > maxLength
-    ? ingredients.substring(0, maxLength - 3) + '...'
-    : ingredients;
+  const limitedIngredients = ingredients.length > 120 ? ingredients.slice(0, 120) + '...' : ingredients;
+  const ingredientsList = ingredients !== 'Не указан'
+    ? limitedIngredients.split(',').map(item => `<li>${item.trim().charAt(0).toUpperCase() + item.trim().slice(1)}</li>`).join('')
+    : '<li>Не указан</li>';
 
   const modalHTML = `
     <div class="modal-content">
@@ -261,33 +261,35 @@ function openProductModal(productId) {
         `).join('')}
       </div>
       <div class="detail-item ingredients">
-        <span class="detail-label">Состав:</span> ${truncatedIngredients}
+        <span class="detail-label">Состав:</span> ${limitedIngredients}
       </div>
-      <div class="section-title">Выберите вес и количество:</div>
-      <div class="weight-container">
-        ${availableWeights.map(({weight, price}) => {
-          const currentQty = quantities[productId][weight] || 0;
-          const totalPrice = currentQty * price;
-          return `
-            <div class="weight-row-pair">
-              <div class="weight-info-box">
-                <span class="weight-emoji">🍞</span>
-                <span class="weight-label">${weight}г</span>
-                <span class="weight-price" id="price-${productId}-${weight}">${totalPrice}₽</span>
+      <div class="weight-section">
+        <div class="section-title">Выберите вес и количество:</div>
+        <div class="weight-row-container">
+          ${availableWeights.map(({weight, price}, index) => {
+            const currentQty = quantities[productId][weight] || 0;
+            const totalPrice = currentQty * price;
+            return `
+              <div class="weight-row" style="flex: 1; margin-right: ${index % 2 === 0 ? '8px' : '0'};">
+                <div class="product-info">
+                  <span class="product-emoji">🍞</span>
+                  <span class="product-ingredients">${weight}г</span>
+                  <span class="meta-item">${totalPrice}₽</span>
+                </div>
               </div>
-              <div class="weight-controls-box">
-                <span class="weight-price">${price}₽</span>
+              <div class="weight-row" style="flex: 1; margin-left: ${index % 2 === 0 ? '8px' : '0'};">
                 <div class="quantity-controls">
                   <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', -1)">◀</button>
                   <span class="quantity-value" id="qty-${productId}-${weight}">${currentQty}</span>
                   <button class="quantity-btn" onclick="changeWeightQuantity('${productId}', '${weight}', 1)">▶</button>
+                  <span class="weight-price">${price}₽</span>
                 </div>
               </div>
-            </div>
-          `;
-        }).join('')}
+            `;
+          }).join('')}
+        </div>
       </div>
-      <div class="summary-row">
+      <div class="modal-summary">
         <div class="summary-item prep-time">
           <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
         </div>
@@ -305,9 +307,8 @@ function openProductModal(productId) {
 
   document.getElementById('productModal').innerHTML = modalHTML;
   document.getElementById('productModal').style.display = 'block';
-  document.getElementById('cartIndicator').style.display = 'none';
-  updateModalCartIndicator();
   updateModalSummary(productId);
+  updateModalCartIndicator();
   const slides = document.querySelectorAll('.modal-image-slider .slide');
   let currentSlide = 0;
   if (slides.length > 1) {
