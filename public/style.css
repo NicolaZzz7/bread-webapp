@@ -282,7 +282,7 @@ body {
 }
 .weight-info {
   display: flex;
-  gap: 4px; /* Уменьшаем расстояние между weight-price и quantity-controls */
+  gap: 8px; /* Уменьшаем расстояние между weight-price и quantity-controls */
 }
 .weight-label, .weight-price {
   font-size: 14px;
@@ -294,7 +294,6 @@ body {
 .quantity-controls {
   display: flex;
   align-items: center;
-  gap: 4px; /* Сблизить элементы */
 }
 .quantity-btn {
   border: none;
@@ -442,43 +441,32 @@ body {
 .modal-summary {
   margin: 20px 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 12px;
+    flex-wrap: wrap;
 }
 
 .summary-totals {
   display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
+  flex-direction: row; /* Вес и сумма в одной строке */
+  justify-content: space-between;
+  align-items: center;
+  border: none; /* Без обводки */
+  background: transparent; /* Прозрачный фон */
 }
-.summary-item.total {
-  flex: 2; /* Больше места для левого контейнера (два веса) */
-  display: flex;
-  flex-direction: row; /* Возвращаем в одну строку */
-  justify-content: space-between; /* Распределяем вес и сумму */
-  align-items: center; /* Выравнивание по центру */
-  padding: 12px;
-  min-width: 120px;
-  border: none; /* Убираем обводку */
-  background: var(--bg-color);
-  font-weight: 600;
-  font-size: 14px;
+
+.summary-totals span:first-child { /* Вес (🍞 ${weight}г) */
+  color: #fff; /* Белый */
 }
-.summary-item.total span:first-child { /* Вес (например, "🍞 500г") */
-  color: #fff; /* Белый цвет для веса */
-}
-.summary-item.total span:last-child { /* positionTotal (сумма) */
-  color: var(--primary); /* Зелёный цвет для суммы */
+.summary-totals span:last-child { /* positionTotal */
+  color: var(--primary); /* Зелёный */
 }
 
 .summary-item {
-  flex: 3; /* Больше места для "Срок изготовления" */
-  max-width: calc(50% - 4px);
-  min-width: 140px;
+  flex: 3; /* Больше места для prep-time */
   display: flex;
-  flex-direction: column; /* Две строки */
+  flex-direction: row; /* Родительский контейнер в ряд */
   justify-content: space-between;
-  align-items: stretch; /* Растягиваем на всю ширину */
   padding: 6px 10px;
   height: 56px;
   border-radius: 10px;
@@ -486,31 +474,39 @@ body {
   background: var(--bg-color);
   box-sizing: border-box;
 }
-.summary-item span:first-child { /* "Срок изготовления" */
+
+.summary-item.total {
+  flex: 1; /* Меньше места внутри для текста */
+  display: flex;
+  flex-direction: column; /* Две строки внутри total */
+  justify-content: space-between;
+  align-items: flex-start; /* Выравнивание текста */
+  padding: 0; /* Убираем внутренний padding, чтобы не наложить border */
+  border: none; /* Без обводки */
+  background: transparent; /* Прозрачный фон */
+}
+.summary-item.total span:first-child { /* "Срок изготовления" */
   font-weight: 600;
   color: var(--text-color);
 }
-.summary-item span:last-child { /* product.prep_time */
-  color: var(--primary); /* Зелёный цвет */
+.summary-item.total span:last-child { /* product.prep_time */
+  color: var(--primary); /* Зелёный */
 }
 
 .summary-item.total-cart {
   flex: 1; /* Меньше места для корзины */
-  max-width: calc(50% - 4px);
-  min-width: 140px;
   display: flex;
-  flex-direction: row; /* Возвращаем в одну строку */
+  flex-direction: row; /* Одна строка */
   align-items: center;
   justify-content: space-between;
   padding: 6px 10px;
   height: 56px;
   border-radius: 10px;
-  border: none; /* Убираем обводку */
+  border: none; /* Без обводки */
   background: var(--bg-color);
-  box-sizing: border-box;
 }
 .summary-item.total-cart span:last-child { /* cartTotal */
-  color: var(--primary); /* Зелёный цвет */
+  color: var(--primary); /* Зелёный */
 }
 
 /* ==============================

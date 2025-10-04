@@ -269,8 +269,8 @@ function openProductModal(productId) {
                 const currentQty = quantities[productId][weight] || 0;
                 const positionTotal = price * currentQty;
                 return `
-                <div class="weight-row"> <!-- Левый контейнер: иконка + вес + сумма позиции -->
-                    <div class="summary-item total">
+                <div class="weight-row"> <!-- Левый контейнер: теперь с summary-totals для вес + сумма позиции -->
+                    <div class="summary-totals">
                         <span>🍞 ${weight}г</span>
                         <span id="positionTotal-${productId}-${weight}">${positionTotal}₽</span>
                     </div>
@@ -289,16 +289,17 @@ function openProductModal(productId) {
                 }).join('')}
             </div>
         </div>
-        <div class="modal-summary">
-            <div class="summary-totals">
-                <div class="summary-item">
-                    <span class="detail-label">Срок изготовления:</span> ${product.prep_time || '1-2 дня'}
+        <div class="modal-summary"> <!-- Нижний ряд: summary-item как родительский для prep-time + корзина -->
+            <div class="summary-item">
+                <div class="summary-item total">
+                    <span class="detail-label">Срок изготовления:</span>
+                    <span>${product.prep_time || '1-2 дня'}</span>
                 </div>
                 <div class="summary-item total-cart">
                     <span>🛒</span>
                     <span id="cartTotal">0₽</span>
                 </div>
-            </div>
+            </div>    
         </div>
         <div id="modalCartIndicator" class="cart-indicator" onclick="openCart()">
             <img src="/bag.svg" alt="Корзина" class="cart-icon">
