@@ -393,7 +393,7 @@ body {
   transform: translate(-50%, -50%);
   background: var(--card-bg);
   border-radius: 20px;
-  padding: 24px;
+  padding: 16px;
   width: 90%; max-width: 400px;
   max-height: none;
   overflow: visible;
@@ -475,9 +475,9 @@ body {
 .summary-item .total { /* Левый квадратик (Срок изготовления) */
   flex: 3; /* Больше места */
   display: flex;
-  flex-direction: column; /* Две строки */
+  flex-direction:  row; /* Две строки */
   justify-content: space-between;
-  align-items: stretch;
+  align-items: center;
   padding: 6px 10px;
   height: 56px;
   border-radius: 10px;
