@@ -452,13 +452,10 @@ body {
 
 .summary-totals {
   display: flex;
-  font-size: 12px;
   flex-direction: row;
   justify-content: space-between; /* Растягиваем элементы на всю ширину */
   align-items: center;
-  padding: 0 10px; /* Отступы для избежания прилипания */
-  gap: 8px; /* Добавляем расстояние между span'ами */
-  width: 100%; /* Занимаем всю ширину weight-row */
+  padding: 0 10px; /* Добавляем отступы внутри для избежания прилипания */
   border: none;
   background: transparent;
 }
@@ -483,7 +480,7 @@ body {
 .summary-item .total { /* Левый квадратик (Срок изготовления) */
   flex: 3; /* Больше места */
   display: flex;
-  flex-direction: row; /* Две строки */
+  flex-direction:  row; /* Две строки */
   justify-content: space-between;
   align-items: stretch;
   padding: 6px 10px;
