@@ -283,7 +283,7 @@ body {
   display: flex;
   gap: 8px; /* Нормальное расстояние для каталога, чтобы не прилипало */
   flex-grow: 1; /* Растягиваем для заполнения пространства */
-  justify-content: flex-start; /* Прижимаем слева, но с растяжением */
+  justify-content: space-between;
 }
 /* Текст */
 .weight-label, .weight-price {
@@ -489,6 +489,7 @@ body {
   display: flex;
   flex-direction:  row; /* Две строки */
   justify-content: space-between;
+    flex-grow: 1;
   align-items: center;
   padding: 6px 10px;
   height: 56px;
