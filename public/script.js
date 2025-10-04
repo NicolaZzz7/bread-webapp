@@ -271,8 +271,8 @@ function openProductModal(productId) {
                 return `
                 <div class="weight-row"> <!-- Левый контейнер: теперь с summary-totals для вес + сумма позиции -->
                     <div class="summary-totals">
-                        <span>🍞</span>
                         <span>${weight}г</span>
+                        <span>🍞</span>
                         <span id="positionTotal-${productId}-${weight}">${positionTotal}₽</span>
                     </div>
                 </div>

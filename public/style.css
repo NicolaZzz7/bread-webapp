@@ -498,6 +498,7 @@ body {
   background: var(--bg-color); /* Фон здесь */
 }
 .summary-item .total span:first-child { /* "Срок изготовления" */
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-color);
 }
@@ -519,6 +520,8 @@ body {
 }
 .summary-item .total-cart span:last-child { /* cartTotal */
   color: var(--primary); /* Зелёный */
+    font-size: 14px;
+  font-weight: 600;
 }
 
 /* ==============================
