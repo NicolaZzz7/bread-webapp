@@ -452,6 +452,7 @@ body {
 
 .summary-totals {
   display: flex;
+  font-size: 12px;
   flex-direction: row;
   justify-content: space-between; /* Растягиваем элементы на всю ширину */
   align-items: center;
@@ -482,7 +483,7 @@ body {
 .summary-item .total { /* Левый квадратик (Срок изготовления) */
   flex: 3; /* Больше места */
   display: flex;
-  flex-direction: column; /* Две строки */
+  flex-direction: row; /* Две строки */
   justify-content: space-between;
   align-items: stretch;
   padding: 6px 10px;
