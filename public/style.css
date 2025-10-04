@@ -282,7 +282,7 @@ body {
 }
 .weight-info {
   display: flex;
-  gap: 8px; /* Уменьшаем расстояние между weight-price и quantity-controls */
+  gap: 4px; /* Уменьшаем расстояние, чтобы weight-price был ближе к контролам */
 }
 .weight-label, .weight-price {
   font-size: 14px;
@@ -294,6 +294,7 @@ body {
 .quantity-controls {
   display: flex;
   align-items: center;
+  gap: 4px; /* Сблизить элементы */
 }
 .quantity-btn {
   border: none;
@@ -340,7 +341,6 @@ body {
 .transition-container > .weight-row-container.hidden {
   transform: scale(0.95);
 }
-
 /* кнопки */
 .add-to-cart-btn {
   width: 100%;
@@ -441,20 +441,19 @@ body {
 .modal-summary {
   margin: 20px 0;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 12px;
-    flex-wrap: wrap;
 }
 
 .summary-totals {
   display: flex;
-  flex-direction: row; /* Вес и сумма в одной строке */
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: space-between; /* Растягиваем элементы на всю ширину */
   align-items: center;
-  border: none; /* Без обводки */
-  background: transparent; /* Прозрачный фон */
+  padding: 0 10px; /* Добавляем отступы внутри для избежания прилипания */
+  border: none;
+  background: transparent;
 }
-
 .summary-totals span:first-child { /* Вес (🍞 ${weight}г) */
   color: #fff; /* Белый */
 }
@@ -463,38 +462,38 @@ body {
 }
 
 .summary-item {
-  flex: 3; /* Больше места для prep-time */
+  flex: 1; /* Родительский контейнер занимает всё пространство */
   display: flex;
-  flex-direction: row; /* Родительский контейнер в ряд */
+  flex-direction: row; /* Левый и правый квадратики рядом */
+  gap: 8px; /* Расстояние между квадратиками */
   justify-content: space-between;
-  padding: 6px 10px;
-  height: 56px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-color);
+  border: none; /* Без обводки и фона у родителя */
+  background: transparent;
   box-sizing: border-box;
 }
 
-.summary-item.total {
-  flex: 1; /* Меньше места внутри для текста */
+.summary-item .total { /* Левый квадратик (Срок изготовления) */
+  flex: 3; /* Больше места */
   display: flex;
-  flex-direction: column; /* Две строки внутри total */
+  flex-direction: column; /* Две строки */
   justify-content: space-between;
-  align-items: flex-start; /* Выравнивание текста */
-  padding: 0; /* Убираем внутренний padding, чтобы не наложить border */
-  border: none; /* Без обводки */
-  background: transparent; /* Прозрачный фон */
+  align-items: stretch;
+  padding: 6px 10px;
+  height: 56px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color); /* Обводка здесь */
+  background: var(--bg-color); /* Фон здесь */
 }
-.summary-item.total span:first-child { /* "Срок изготовления" */
+.summary-item .total span:first-child { /* "Срок изготовления" */
   font-weight: 600;
   color: var(--text-color);
 }
-.summary-item.total span:last-child { /* product.prep_time */
+.summary-item .total span:last-child { /* product.prep_time */
   color: var(--primary); /* Зелёный */
 }
 
-.summary-item.total-cart {
-  flex: 1; /* Меньше места для корзины */
+.summary-item .total-cart { /* Правый квадратик (корзина) */
+  flex: 1; /* Меньше места */
   display: flex;
   flex-direction: row; /* Одна строка */
   align-items: center;
@@ -502,10 +501,10 @@ body {
   padding: 6px 10px;
   height: 56px;
   border-radius: 10px;
-  border: none; /* Без обводки */
-  background: var(--bg-color);
+  border: 1px solid var(--border-color); /* Обводка здесь */
+  background: var(--bg-color); /* Фон здесь */
 }
-.summary-item.total-cart span:last-child { /* cartTotal */
+.summary-item .total-cart span:last-child { /* cartTotal */
   color: var(--primary); /* Зелёный */
 }
 
