@@ -271,7 +271,7 @@ body {
   width: 100%; /* Полная ширина для растяжения вложенных */
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   padding: 6px 10px; /* компактнее */
   height: 56px;
   border-radius: 10px;
@@ -458,12 +458,19 @@ body {
   padding: 0 10px; /* Добавляем отступы внутри для избежания прилипания */
   border: none;
   background: transparent;
+  gap: 12px;
+
 }
 .summary-totals span:first-child { /* Вес (🍞 ${weight}г) */
   color: #fff; /* Белый */
+    font-size: 14px;
+  font-weight: 600;
 }
 .summary-totals span:last-child { /* positionTotal */
   color: var(--primary); /* Зелёный */
+    font-size: 14px;
+  font-weight: 600;
+
 }
 
 .summary-item {
@@ -482,7 +489,7 @@ body {
   display: flex;
   flex-direction:  row; /* Две строки */
   justify-content: space-between;
-  align-items: stretch;
+  align-items: center;
   padding: 6px 10px;
   height: 56px;
   border-radius: 10px;
