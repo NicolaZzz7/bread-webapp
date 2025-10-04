@@ -268,9 +268,7 @@ body {
 }
 .weight-row {
   flex: 1;
-  max-width: calc(50% - 4px);
-  width: 100%; /* Убеждаемся, что занимает всю доступную ширину */
-  min-width: 0;
+  width: 100%; /* Полная ширина для растяжения вложенных */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -283,9 +281,11 @@ body {
 }
 .weight-info {
   display: flex;
-  gap: 4px; /* Уменьшаем расстояние, чтобы weight-price был ближе к контролам */
-    flex: 1;
+  gap: 8px; /* Нормальное расстояние для каталога, чтобы не прилипало */
+  flex-grow: 1; /* Растягиваем для заполнения пространства */
+  justify-content: flex-start; /* Прижимаем слева, но с растяжением */
 }
+/* Текст */
 .weight-label, .weight-price {
   font-size: 14px;
   font-weight: 600;
@@ -297,7 +297,8 @@ body {
   display: flex;
   align-items: center;
   gap: 4px; /* Сблизить элементы */
-  flex: 1;
+  flex-grow: 1; /* Растягиваем для баланса с weight-info */
+  justify-content: flex-end; /* Прижимаем справа */
 }
 .quantity-btn {
   border: none;
@@ -309,6 +310,7 @@ body {
   padding: 0 8px; /* Немного больше места вокруг стрелочек */
   line-height: 1;
 }
+
 .quantity-value {
   font-size: 14px;
   font-weight: 600;
@@ -453,7 +455,9 @@ body {
   flex-direction: row;
   justify-content: space-between; /* Растягиваем элементы на всю ширину */
   align-items: center;
-  padding: 0 10px; /* Добавляем отступы внутри для избежания прилипания */
+  padding: 0 10px; /* Отступы для избежания прилипания */
+  gap: 8px; /* Добавляем расстояние между span'ами */
+  width: 100%; /* Занимаем всю ширину weight-row */
   border: none;
   background: transparent;
 }
@@ -478,7 +482,7 @@ body {
 .summary-item .total { /* Левый квадратик (Срок изготовления) */
   flex: 3; /* Больше места */
   display: flex;
-  flex-direction:  row; /* Две строки */
+  flex-direction: column; /* Две строки */
   justify-content: space-between;
   align-items: stretch;
   padding: 6px 10px;
