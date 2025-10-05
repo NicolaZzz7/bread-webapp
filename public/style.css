@@ -312,7 +312,7 @@ body {
 }
 
 .quantity-value {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   min-width: 16px;
   text-align: center;
@@ -482,14 +482,17 @@ body {
   border: none; /* Без обводки и фона у родителя */
   background: transparent;
   box-sizing: border-box;
+    font-size: 14px;
+  font-weight: 600;
 }
 
 .summary-item .total { /* Левый квадратик (Срок изготовления) */
-  flex: 3; /* Больше места */
+   /* Больше места */
+  flex-grow: 3;
   display: flex;
   flex-direction:  row; /* Две строки */
   justify-content: space-between;
-    flex-grow: 1;
+
   align-items: center;
   padding: 6px 10px;
   height: 56px;
@@ -498,8 +501,6 @@ body {
   background: var(--bg-color); /* Фон здесь */
 }
 .summary-item .total span:first-child { /* "Срок изготовления" */
-  font-size: 14px;
-  font-weight: 600;
   color: var(--text-color);
 }
 .summary-item .total span:last-child { /* product.prep_time */
@@ -507,7 +508,7 @@ body {
 }
 
 .summary-item .total-cart { /* Правый квадратик (корзина) */
-  flex: 1; /* Меньше места */
+  flex-grow: 1; /* Меньше места */
   display: flex;
   flex-direction: row; /* Одна строка */
   align-items: center;
